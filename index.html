@@ -21,7 +21,6 @@ body {
 </style>
 </head>
 <body>
-<div id='debug'>Traffic Simulator is a optimization of <a href="https://github.com/volkhin/RoadTrafficSimulator" target="_blanc">original code</a></div>
 <script src="js/three.min.js"></script>
 <script src="js/sea3d.min.js"></script>
 <script src="js/OrbitControls.js"></script>
@@ -34,7 +33,7 @@ var mesh;
 var grid;
 var pool;
 
-			
+
 	var world;
 	var debug = document.getElementById('debug');
 	var gui;
@@ -75,7 +74,7 @@ var pool;
         car_mat[0] = new THREE.MeshBasicMaterial( { envMap:env, reflectivity:0.9 } );
         car_mat[1] = new THREE.MeshBasicMaterial( { envMap:env, reflectivity:0.9 } );
         car_mat[2] = new THREE.MeshBasicMaterial( { envMap:env, reflectivity:0.9 } );
-		
+
 		var tx;
 		var img = new Image();
 	    img.onload = function(){
@@ -111,7 +110,7 @@ var pool;
 		var d = grid*0.5;
 		ground.position.set(d, -0.2, d);
 
-		
+
 		window.addEventListener( 'resize', onWindowResize, false );
 	}
 
@@ -221,7 +220,7 @@ var pool;
 	        	this.drawSignals(road);
 	        }*/
 
-	        // remove car 
+	        // remove car
 	        var i = world.toRemove.length;
 	        while(i--){ removeCar(world.toRemove[i]); };
 	        world.clearTmpRemove();
@@ -241,7 +240,7 @@ var pool;
 		if(roads[id]==null){
 			//var sourceSide = road.sourceSide;
 		   // var targetSide = road.targetSide
-			
+
 			var p0 = road.source.rect.center();
 			var p1 = road.target.rect.center();
 			var lngx = ((p1.x-p0.x)/grid);
@@ -267,9 +266,9 @@ var pool;
 				if(side==0){
 					m.makeTranslation((p0.x+(grid*dir)+((i*grid)*dir)), 0, p0.y);
 					m.multiply(new THREE.Matrix4().makeRotationY(Math.PI*0.5));
-				}else{ 
+				}else{
 					m.makeTranslation(p0.x, 0, (p0.y+(grid*dir)+((i*grid)*dir)));
-					
+
 				}
 				g.merge( road_geo, m );
 			}
@@ -296,14 +295,14 @@ var pool;
 		//var end = targetSide.target.center();
 		//console.log(sourceSide)
 
-		
+
 
 		//(sourceSide.source, sourceSide.target, targetSide.source, targetSide.target)
 	}
 
 	function addSignals(cc, id){
 	}
-    
+
 
     function addCar(car){
     	var id = car.id.substring(3);
@@ -435,7 +434,7 @@ V.SeaPool.prototype = {
         //g.applyMatrix(mtx);
         return g;
     }
-}	
+}
 </script>
 </body>
 </html>
