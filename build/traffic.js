@@ -114,8 +114,8 @@ var nativeForEach = null;
 var nativeMap = null;
 var nativeBind = null;*/
 
-TRAFFIC.binding = function(fn, me){ 
-	return function(){ return fn.apply(me, arguments); }; 
+TRAFFIC.binding = function(fn, me){
+	return function(){ return fn.apply(me, arguments); };
 }
 
 TRAFFIC.bind = function(func, context) {
@@ -566,59 +566,359 @@ TRAFFIC.World.prototype = {
         return _results;
     },
     generateMap : function(X, Y, linemax, mult) {
-        var minX = -X;
-        var maxX = X;
-        var minY = -Y;
-        var maxY = Y;
-    //generateMap : function(minX, maxX, minY, maxY, Linemax, mult) {
         linemax = linemax || 5;
-        mult =  mult || 0.8;
-        var gridSize, intersection, intersectionsNumber, map, previous, rect, step, x, y, _i, _j, _k, _l;
-        /*if (minX == null) minX = -2;
-        if (maxX == null) maxX = 2;
-        if (minY == null) minY = -2;
-        if (maxY == null) maxY = 2;*/
+        var gridSize, intersection, map, rect, step, x, y;
         this.clear();
-        intersectionsNumber = (mult * (maxX - minX + 1) * (maxY - minY + 1)) | 0;
+        var inters = {
+            "intersection1": {
+                "id": "intersection1",
+                "rect": {
+                    "x": 1,
+                    "y": 0,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            },
+            "intersection2": {
+                "id": "intersection2",
+                "rect": {
+                    "x": -2,
+                    "y": 0,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            },
+            "intersection3": {
+                "id": "intersection3",
+                "rect": {
+                    "x": -2,
+                    "y": -2,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            },
+            "intersection4": {
+                "id": "intersection4",
+                "rect": {
+                    "x": -2,
+                    "y": 1,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            },
+            "intersection5": {
+                "id": "intersection5",
+                "rect": {
+                    "x": 1,
+                    "y": 1,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            },
+            "intersection6": {
+                "id": "intersection6",
+                "rect": {
+                    "x": 1,
+                    "y": -2,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            },
+            "intersection7": {
+                "id": "intersection7",
+                "rect": {
+                    "x": 2,
+                    "y": -2,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            },
+            "intersection8": {
+                "id": "intersection8",
+                "rect": {
+                    "x": 2,
+                    "y": 0,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            },
+            "intersection9": {
+                "id": "intersection9",
+                "rect": {
+                    "x": 2,
+                    "y": 1,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            },
+            "intersection10": {
+                "id": "intersection10",
+                "rect": {
+                    "x": 3,
+                    "y": 0,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            },
+            "intersection11": {
+                "id": "intersection11",
+                "rect": {
+                    "x": -2,
+                    "y": 2,
+                    "_width": 14,
+                    "_height": 14
+                },
+                "controlSignals": {
+                    "flipMultiplier": 0.24444228612938024,
+                    "phaseOffset": 21.747548818024587
+                }
+            }
+        };
         map = {};
         gridSize = TRAFFIC.settings.gridSize;
         step = linemax * gridSize;
-        this.carsNumber = 100;
-        while (intersectionsNumber > 0) {
-            x = TRAFFIC.rand(minX, maxX);
-            y = TRAFFIC.rand(minY, maxY);
+        // this.carsNumber = 10;
+        for (var inter in inters) {
+            inter = inters[inter];
+            x = inter.rect.x;
+            y = inter.rect.y;
             if (map[[x, y]] == null) {
                 rect = new TRAFFIC.Rect(step * x, step * y, gridSize, gridSize);
                 intersection = new TRAFFIC.Intersection(rect);
                 this.addIntersection(map[[x, y]] = intersection);
-                intersectionsNumber -= 1;
             }
         }
-        for (x = _i = minX; minX <= maxX ? _i <= maxX : _i >= maxX; x = minX <= maxX ? ++_i : --_i) {
-            previous = null;
-            for (y = _j = minY; minY <= maxY ? _j <= maxY : _j >= maxY; y = minY <= maxY ? ++_j : --_j) {
-                intersection = map[[x, y]];
-                if (intersection != null) {
-                    if (TRAFFIC.random() < 0.9) {
-                       if (previous != null)  this.addRoad(new TRAFFIC.Road(intersection, previous));
-                       if (previous != null)  this.addRoad(new TRAFFIC.Road(previous, intersection));
-                   }
-                   previous = intersection;
-               }
+
+        var roads = {
+            "road1": {
+                "id": "road1",
+                "name": "آزادی",
+                "source": "intersection1",
+                "target": "intersection2",
+                "max_speed": 10
+            },
+            "road2": {
+                "id": "road2",
+                "name": "آزادی",
+                "source": "intersection2",
+                "target": "intersection1",
+                "max_speed": 10
+            },
+            "road3": {
+                "id": "road3",
+                "name": "تونل توحید",
+                "source": "intersection2",
+                "target": "intersection3",
+                "max_speed": 10
+            },
+            "road4": {
+                "id": "road4",
+                "name": "تونل توحید",
+                "source": "intersection3",
+                "target": "intersection2",
+                "max_speed": 10
+            },
+            "road5": {
+                "id": "road5",
+                "name": "توحید",
+                "source": "intersection2",
+                "target": "intersection4",
+                "max_speed": 10
+            },
+            "road6": {
+                "id": "road6",
+                "name": "توحید",
+                "source": "intersection4",
+                "target": "intersection2",
+                "max_speed": 10
+            },
+            "road7": {
+                "id": "road7",
+                "name": "جمهوری اسلامی",
+                "source": "intersection4",
+                "target": "intersection5",
+                "max_speed": 10
+            },
+            "road8": {
+                "id": "road8",
+                "name": "جمهوری اسلامی",
+                "source": "intersection5",
+                "target": "intersection4",
+                "max_speed": 10
+            },
+            "road9": {
+                "id": "road9",
+                "name": "کارگر جنوبی",
+                "source": "intersection1",
+                "target": "intersection5",
+                "max_speed": 10
+            },
+            "road10": {
+                "id": "road10",
+                "name": "کارگر جنوبی",
+                "source": "intersection5",
+                "target": "intersection1",
+                "max_speed": 10
+            },
+            "road11": {
+                "id": "road11",
+                "name": "کارگر شمالی",
+                "source": "intersection1",
+                "target": "intersection6",
+                "max_speed": 10
+            },
+            "road12": {
+                "id": "road12",
+                "name": "کارگر شمالی",
+                "source": "intersection6",
+                "target": "intersection1",
+                "max_speed": 10
+            },
+            "road13": {
+                "id": "road13",
+                "name": "بولوار کشاورز",
+                "source": "intersection7",
+                "target": "intersection6",
+                "max_speed": 10
+            },
+            "road14": {
+                "id": "road14",
+                "name": "بولوار کشاورز",
+                "source": "intersection6",
+                "target": "intersection7",
+                "max_speed": 10
+            },
+            "road15": {
+                "id": "road15",
+                "name": "انقلاب اسلامی",
+                "source": "intersection8",
+                "target": "intersection1",
+                "max_speed": 10
+            },
+            "road16": {
+                "id": "road16",
+                "name": "انقلاب اسلامی",
+                "source": "intersection1",
+                "target": "intersection8",
+                "max_speed": 10
+            },
+            "road17": {
+                "id": "road17",
+                "name": "شانزده آدر",
+                "source": "intersection7",
+                "target": "intersection8",
+                "max_speed": 10
+            },
+            "road18": {
+                "id": "road18",
+                "name": "شانزده آذر",
+                "source": "intersection8",
+                "target": "intersection7",
+                "max_speed": 10
+            },
+            "road19": {
+                "id": "road19",
+                "name": "دوازده فروردین",
+                "source": "intersection9",
+                "target": "intersection8",
+                "max_speed": 10
+            },
+            "road20": {
+                "id": "road20",
+                "name": "دوازده فروردین",
+                "source": "intersection8",
+                "target": "intersection9",
+                "max_speed": 10
+            },
+            "road21": {
+                "id": "road21",
+                "name": "جمهوری",
+                "source": "intersection9",
+                "target": "intersection5",
+                "max_speed": 10
+            },
+            "road22": {
+                "id": "road22",
+                "name": "جمهوری",
+                "source": "intersection5",
+                "target": "intersection9",
+                "max_speed": 10
+            },
+            "road23": {
+                "id": "road23",
+                "name": "انقلاب",
+                "source": "intersection8",
+                "target": "intersection10",
+                "max_speed": 10
+            },
+            "road24": {
+                "id": "road24",
+                "name": "انقلاب",
+                "source": "intersection10",
+                "target": "intersection8",
+                "max_speed": 10
+            },
+            "road25": {
+                "id": "road25",
+                "name": "توحید جنوبی",
+                "source": "intersection4",
+                "target": "intersection11",
+                "max_speed": 10
+            },
+            "road26": {
+                "id": "road26",
+                "name": "توحید جنوبی",
+                "source": "intersection11",
+                "target": "intersection4",
+                "max_speed": 10
             }
-        }
-        for (y = _k = minY; minY <= maxY ? _k <= maxY : _k >= maxY; y = minY <= maxY ? ++_k : --_k) {
-            previous = null;
-            for (x = _l = minX; minX <= maxX ? _l <= maxX : _l >= maxX; x = minX <= maxX ? ++_l : --_l) {
-                intersection = map[[x, y]];
-                if (intersection != null) {
-                    if (TRAFFIC.random() < 0.9) {
-                        if (previous != null) this.addRoad(new TRAFFIC.Road(intersection, previous));
-                        if (previous != null) this.addRoad(new TRAFFIC.Road(previous, intersection));
-                    }
-                    previous = intersection;
-                }
-            }
+        };
+        for (var road in roads) {
+            road = roads[road];
+            var source = inters[road.source].rect;
+            var target = inters[road.target].rect;
+            this.addRoad(new TRAFFIC.Road(map[[source.x, source.y]], map[[target.x, target.y]]));
+            this.addRoad(new TRAFFIC.Road(map[[target.x, target.y]], map[[source.x, source.y]]));
         }
         return null;
     },
@@ -1065,7 +1365,7 @@ TRAFFIC.LanePosition.prototype = {
         }
     },
     getNext : function() {
-        if (this.lane && !this.free) return this.lane.getNext(this); 
+        if (this.lane && !this.free) return this.lane.getNext(this);
     }
 }
 TRAFFIC.Pool = function (factory, pool) {
@@ -1128,7 +1428,7 @@ TRAFFIC.Road = function (source, target) {
             return this.targetSide.target.subtract(this.sourceSide.source).length;
         }
     });
-    
+
     Object.defineProperty(this, 'leftmostLane', {
         get: function() {
             return this.lanes[this.lanesNumber - 1];
@@ -1302,14 +1602,14 @@ TRAFFIC.Trajectory.prototype = {
         this.next.position += distance;
         this.temp.position += distance;
         if (this.timeToMakeTurn() && this.canEnterIntersection() && this.isValidTurn()) this._startChangingLanes(this.car.popNextLane(), 0);
-  
+
         tempRelativePosition = this.temp.position / ((_ref = this.temp.lane) != null ? _ref.length : void 0);
         gap = 2 * this.car.length;
         if (this.isChangingLanes && this.temp.position > gap && !this.current.free) this.current.release();
 
         if (this.isChangingLanes && this.next.free && this.temp.position + gap > ((_ref1 = this.temp.lane) != null ? _ref1.length : void 0)) this.next.acquire();
         if (this.isChangingLanes && tempRelativePosition >= 1) this._finishChangingLanes();
-        if (this.current.lane && !this.isChangingLanes && !this.car.nextLane) return this.car.pickNextLane(); 
+        if (this.current.lane && !this.isChangingLanes && !this.car.nextLane) return this.car.pickNextLane();
     },
     changeLane : function(nextLane) {
         var nextPosition;

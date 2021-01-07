@@ -31,7 +31,7 @@
 <script src="js/sea3d.min.js"></script>
 <script src="js/OrbitControls.js"></script>
 <script src="js/gui.min.js"></script>
-<script src="dist/traffic.js"></script>
+<script src="build/traffic.js"></script>
 
 <script>
   var camera, scene, renderer, controls;
@@ -68,6 +68,22 @@
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 4000);
     camera.position.z = 200;
     camera.position.y = 200;
+    // camera.position.x = 200;
+    // setInterval(()=>{
+    //   // console.log(cars[100]);
+    //   if (cars[100]) {
+    //     camera.lookAt(cars[100])
+    //   }
+    // }, 1000)
+
+    // const w = window.innerWidth;
+    // const h = window.innerHeight;
+    // var fullWidth = w;
+    // const fullHeight = h;
+    // setInterval(()=>{
+    //   fullWidth -= 100;
+    //   camera.setViewOffset( fullWidth, fullHeight, w * 0, h * 0, w, h );
+    // }, 1000);
 
     controls = new THREE.OrbitControls(camera);
 
@@ -104,8 +120,7 @@
     road_mat = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('road.png')});
 
 
-    //var g = new THREE.PlaneGeometry(15*20,15*20, 14,14);
-    var t = (7 * 4) + 1
+    var t = (11 * 4) + 1
     var g = new THREE.PlaneGeometry(grid * t, grid * t, t, t);
     g.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
     var g_mat = new THREE.MeshBasicMaterial({color: 0x303030, wireframe: true});
@@ -165,7 +180,7 @@
   function init() {
     world = new TRAFFIC.World();
     world.generateMap(2, 2, 7, 1);
-    world.carsNumber = 100;
+    world.carsNumber = 50;
     previousTime = 0;
     sets.timeFactor = TRAFFIC.settings.defaultTimeFactor;
 
@@ -235,7 +250,6 @@
     while (i--) {
       removeCar(world.toRemove[i]);
     }
-    ;
     world.clearTmpRemove();
 
     o3 = world.cars.all();
