@@ -410,12 +410,18 @@ var map_1_data = {
             "carImage":"images/taxi.png"
         }
     },
-    "carsNumber": 45,
+    "carsNumber": 30,
     "time": 10,
     "start_lane_ids": [
-        "road4",
-        "road24",
-        "road26"
+      // 'road6',
+      // 'road7',
+      // 'road46',
+      // 'road47',
+      // 'road50',
+      // 'road51',
+        'road4',
+        'road24',
+        'road26',
     ]
 };
   var ctor = function(){};
@@ -588,9 +594,10 @@ TRAFFIC.shuffle = function(obj) {
     return shuffled;
 };
 
-TRAFFIC.idCounter = 0;
-TRAFFIC.uniqueId = function(prefix){
-    var id = ++TRAFFIC.idCounter + '';
+TRAFFIC.idCounter = {};
+TRAFFIC.uniqueId = function(prefix) {
+    TRAFFIC.idCounter[prefix] = TRAFFIC.idCounter[prefix] + 1 || 1;
+    var id = TRAFFIC.idCounter[prefix] + '';
     return prefix ? prefix + id : id;
 }
 
@@ -993,7 +1000,7 @@ TRAFFIC.World.prototype = {
         map = {};
         gridSize = TRAFFIC.settings.gridSize;
         step = linemax * gridSize;
-        // this.carsNumber = 10;
+        this.carsNumber = map_1_data.carsNumber;
         for (var inter in inters) {
             inter = inters[inter];
             x = inter.rect.x;
@@ -1011,7 +1018,7 @@ TRAFFIC.World.prototype = {
             var source = inters[road.source].rect;
             var target = inters[road.target].rect;
             this.addRoad(new TRAFFIC.Road(map[[source.x, source.y]], map[[target.x, target.y]]));
-            this.addRoad(new TRAFFIC.Road(map[[target.x, target.y]], map[[source.x, source.y]]));
+            // this.addRoad(new TRAFFIC.Road(map[[target.x, target.y]], map[[source.x, source.y]]));
         }
         return null;
     },
@@ -1043,11 +1050,9 @@ TRAFFIC.World.prototype = {
             let difference = false;
             const current_car_ids = Object.keys(this.cars.objects);
             Object.keys(map_1_data.specialCars).forEach(key => {
-                if (current_car_ids.indexOf(map_1_data.specialCars[key].id)) {
-                    console.log(key, this.cars);
-                    // if (!_.contains(current_car_ids, map_data_js.specialCars[key].id)) {
+                if (current_car_ids.indexOf(map_1_data.specialCars[key].id) < 0) {
                     difference = true;
-                    this.cars.objects[key].addSpecialCar(map_1_data.specialCars[key]);
+                    this.addSpecialCar(map_1_data.specialCars[key]);
                 }
             });
             if (!difference) {
@@ -1061,6 +1066,29 @@ TRAFFIC.World.prototype = {
         road.source.roads.push(road);
         road.target.inRoads.push(road);
         return road.update();
+    },
+    addSpecialCars : function(special_cars_object) {
+        Object.keys(special_cars_object).forEach(car_id => {
+            var car_data = special_cars_object[car_id];
+            var road = this.roads.all()[TRAFFIC.sample(map_1_data.start_lane_ids)];
+            if (road != null) {
+                var car;
+                var lane = TRAFFIC.sample(road.lanes);
+                if (lane != null) { car = new TRAFFIC.Car(lane); }
+                car.makeSpecial(car_data);
+                this.addCar(car);
+            }
+        });
+    },
+    addSpecialCar : function(car_data) {
+        const road = this.roads.all()[TRAFFIC.sample(map_1_data.start_lane_ids)];
+        if (road != null) {
+            var car;
+            var lane = TRAFFIC.sample(road.lanes);
+            if (lane != null) { car = new TRAFFIC.Car(lane); }
+            car.makeSpecial(car_data);
+            this.addCar(car);
+        }
     },
     getRoad : function(id) {
         return this.roads.get(id);
@@ -1085,14 +1113,10 @@ TRAFFIC.World.prototype = {
         return this.intersections.get(id);
     },
     addRandomCar : function() {
-        var lane, road;
-        road = TRAFFIC.sample(this.roads.all());
+        var road = this.roads.all()[TRAFFIC.sample(map_1_data.start_lane_ids)];
         if (road != null) {
-            lane = TRAFFIC.sample(road.lanes);
-            if (lane != null){
-                //console.log('car add');
-                return this.addCar(new TRAFFIC.Car(lane));
-            }
+            var lane = TRAFFIC.sample(road.lanes);
+            if (lane != null) { return this.addCar(new TRAFFIC.Car(lane)); }
         }
     },
     removeRandomCar : function() {

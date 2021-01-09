@@ -175,12 +175,13 @@
   function initObject() {
     pool = new V.SeaPool()
     pool.load('cars', init);
+    // pool.load('light', init);
   }
 
   function init() {
     world = new TRAFFIC.World();
     world.generateMap(2, 2, 7, 1);
-    world.carsNumber = 50;
+    // world.carsNumber = 50;
     previousTime = 0;
     sets.timeFactor = TRAFFIC.settings.defaultTimeFactor;
 
@@ -234,18 +235,13 @@
     for (id in o0) {
       addInter(o0[id]);
     }
+
     o1 = world.roads.all();
     for (id in o1) {
       this.addRoad(o1[id]);
       this.addSignals(o1[id]);
     }
-    /*o2 = this.world.roads.all();
-    for (id in o2) {
-      //road = _ref2[id];
-      this.drawSignals(road);
-    }*/
 
-    // remove car
     var i = world.toRemove.length;
     while (i--) {
       removeCar(world.toRemove[i]);
@@ -256,9 +252,6 @@
     for (id in o3) {
       addCar(o3[id], id);
     }
-    //}
-
-    // window.requestAnimationFrame(update);
   }
 
   function addRoad(road) {
