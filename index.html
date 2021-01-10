@@ -34,16 +34,11 @@
 <script src="build/traffic.js"></script>
 
 <script>
-  var camera, scene, renderer, controls;
-  var mesh;
-  var grid;
-  var pool;
-
-
+  var camera, scene, renderer, controls, pool, mesh, grid;
   var world;
   var debug = document.getElementById('debug');
   var gui;
-  var lastUpdate;
+  var previousTime;
   var cars = [];
   var roads = [];
   var inter = [];
@@ -55,6 +50,35 @@
 
 
   window.onload = initObject;
+
+  function initObject() {
+    pool = new V.SeaPool()
+    pool.load('cars', init);
+    // pool.load('light', init);
+  }
+
+  function init() {
+    world = new TRAFFIC.World();
+    world.generateMap(2, 2, 7, 1);
+    // world.carsNumber = 50;
+    previousTime = 0;
+    sets.timeFactor = TRAFFIC.settings.defaultTimeFactor;
+
+    gui = new dat.GUI();
+    var guiWorld = gui.addFolder('world');
+    guiWorld.open();
+    guiWorld.add(sets, 'timeFactor', 0.1, 10).listen();
+    guiWorld.add(world, 'carsNumber').min(0).max(200).step(1).listen();
+    guiWorld.add(world, 'instantSpeed').step(0.00001).listen();
+    guiWorld.add(TRAFFIC.settings, 'lightsFlipInterval', 0, 50, 0.01).listen();
+
+
+    init3d();
+    animate();
+
+    setInterval(update, 1000 / 60);
+    //update();
+  }
 
   function init3d() {
     renderer = new THREE.WebGLRenderer({precision: "mediump", antialias: true, alpha: true});
@@ -134,86 +158,13 @@
     window.addEventListener('resize', onWindowResize, false);
   }
 
-  function generateRandomColor(img, mat) {
-    var canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 1024;
-    var ctx = canvas.getContext('2d');
-    i = 16;
-    var n = 0, j = 0;
-    for (i = 0; i < 16; i++) {
-      ctx.beginPath();
-      if (i !== 11 && i !== 15) ctx.fillStyle = V.randCarColor();
-      ctx.rect(n * 256, j * 256, 256, 256);
-      ctx.fill();
-      n++
-      if (n == 4) {
-        n = 0;
-        j++;
-      }
-    }
-
-    ctx.drawImage(img, 0, 0, 1024, 1024);
-    tx = new THREE.Texture(canvas);
-    tx.needsUpdate = true;
-    tx.flipY = false;
-    mat.map = tx;
-    mat.needsUpdate = true;
-  }
-
-  function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  }
-
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
   }
 
-  function initObject() {
-    pool = new V.SeaPool()
-    pool.load('cars', init);
-    // pool.load('light', init);
-  }
-
-  function init() {
-    world = new TRAFFIC.World();
-    world.generateMap(2, 2, 7, 1);
-    // world.carsNumber = 50;
-    previousTime = 0;
-    sets.timeFactor = TRAFFIC.settings.defaultTimeFactor;
-
-    gui = new dat.GUI();
-    var guiWorld = gui.addFolder('world');
-    guiWorld.open();
-    //guiWorld.add(world, 'save');
-    //guiWorld.add(world, 'load');
-    //guiWorld.add(world, 'clear');
-    //guiWorld.add(world, 'generateMap');
-    //guiVisualizer = gui.addFolder('visualizer');
-    //guiVisualizer.open();
-    //guiVisualizer.add(visualizer, 'running').listen();
-    //guiVisualizer.add(visualizer, 'debug').listen();
-    //guiVisualizer.add(visualizer.zoomer, 'scale', 0.1, 2).listen();
-    guiWorld.add(sets, 'timeFactor', 0.1, 10).listen();
-    guiWorld.add(world, 'carsNumber').min(0).max(200).step(1).listen();
-    guiWorld.add(world, 'instantSpeed').step(0.00001).listen();
-    guiWorld.add(TRAFFIC.settings, 'lightsFlipInterval', 0, 50, 0.01).listen();
-
-
-    init3d();
-    animate();
-
-    setInterval(update, 1000 / 60);
-    //update();
-  }
-
   function update() {
-    var now = Date.now();
-    var dt = now - lastUpdate;
-    lastUpdate = now;
     var time = Date.now();
 
 
@@ -252,6 +203,38 @@
     for (id in o3) {
       addCar(o3[id], id);
     }
+  }
+
+  function generateRandomColor(img, mat) {
+    var canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1024;
+    var ctx = canvas.getContext('2d');
+    i = 16;
+    var n = 0, j = 0;
+    for (i = 0; i < 16; i++) {
+      ctx.beginPath();
+      if (i !== 11 && i !== 15) ctx.fillStyle = V.randCarColor();
+      ctx.rect(n * 256, j * 256, 256, 256);
+      ctx.fill();
+      n++
+      if (n == 4) {
+        n = 0;
+        j++;
+      }
+    }
+
+    ctx.drawImage(img, 0, 0, 1024, 1024);
+    tx = new THREE.Texture(canvas);
+    tx.needsUpdate = true;
+    tx.flipY = false;
+    mat.map = tx;
+    mat.needsUpdate = true;
+  }
+
+  function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
   function addRoad(road) {
@@ -321,7 +304,6 @@
   function addSignals(cc, id) {
   }
 
-
   function addCar(car) {
     var id = car.id.substring(3);
     if (cars[id] == null) {
@@ -379,7 +361,6 @@
 
 
   var V = {};
-
   V.randColor = function () {
     return '#' + Math.floor(Math.random() * 16777215).toString(16);
   }
