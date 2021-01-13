@@ -147,179 +147,189 @@ var map_1_data = {
     "roads": {
         "road1": {
             "id": "road1",
+            "name": "انقلاب اسلامی",
+            "source": "intersection1",
+            "target": "intersection8",
+            "max_speed": 10
+        },
+        "road2": {
+            "id": "road2",
+            "name": "کارگر جنوبی",
+            "source": "intersection1",
+            "target": "intersection6",
+            "max_speed": 10
+        },
+        "road3": {
+            "id": "road3",
             "name": "آزادی",
             "source": "intersection1",
             "target": "intersection2",
             "max_speed": 10
         },
-        "road2": {
-            "id": "road2",
+        "road4": {
+            "id": "road4",
+            "name": "کارگر شمالی",
+            "source": "intersection1",
+            "target": "intersection5",
+            "max_speed": 10
+        },
+
+        "road5": {
+            "id": "road5",
             "name": "آزادی",
             "source": "intersection2",
             "target": "intersection1",
             "max_speed": 10
         },
-        "road3": {
-            "id": "road3",
+        "road6": {
+            "id": "road6",
             "name": "تونل توحید",
             "source": "intersection2",
             "target": "intersection3",
             "max_speed": 10
         },
-        "road4": {
-            "id": "road4",
-            "name": "تونل توحید",
-            "source": "intersection3",
-            "target": "intersection2",
-            "max_speed": 10
-        },
-        "road5": {
-            "id": "road5",
+        "road7": {
+            "id": "road7",
             "name": "توحید",
             "source": "intersection2",
             "target": "intersection4",
             "max_speed": 10
         },
-        "road6": {
-            "id": "road6",
-            "name": "توحید",
-            "source": "intersection4",
+
+        "road8": {
+            "id": "road8",
+            "name": "تونل توحید",
+            "source": "intersection3",
             "target": "intersection2",
             "max_speed": 10
         },
-        "road7": {
-            "id": "road7",
-            "name": "جمهوری اسلامی",
-            "source": "intersection4",
-            "target": "intersection5",
-            "max_speed": 10
-        },
-        "road8": {
-            "id": "road8",
-            "name": "جمهوری اسلامی",
-            "source": "intersection5",
-            "target": "intersection4",
-            "max_speed": 10
-        },
+
         "road9": {
             "id": "road9",
-            "name": "کارگر جنوبی",
-            "source": "intersection1",
+            "name": "توحید",
+            "source": "intersection4",
             "target": "intersection5",
             "max_speed": 10
         },
         "road10": {
             "id": "road10",
-            "name": "کارگر جنوبی",
-            "source": "intersection5",
-            "target": "intersection1",
+            "name": "جمهوری اسلامی",
+            "source": "intersection4",
+            "target": "intersection2",
             "max_speed": 10
         },
         "road11": {
             "id": "road11",
-            "name": "کارگر شمالی",
-            "source": "intersection1",
-            "target": "intersection6",
-            "max_speed": 10
-        },
-        "road12": {
-            "id": "road12",
-            "name": "کارگر شمالی",
-            "source": "intersection6",
-            "target": "intersection1",
-            "max_speed": 10
-        },
-        "road13": {
-            "id": "road13",
-            "name": "بولوار کشاورز",
-            "source": "intersection7",
-            "target": "intersection6",
-            "max_speed": 10
-        },
-        "road14": {
-            "id": "road14",
-            "name": "بولوار کشاورز",
-            "source": "intersection6",
-            "target": "intersection7",
-            "max_speed": 10
-        },
-        "road15": {
-            "id": "road15",
-            "name": "انقلاب اسلامی",
-            "source": "intersection8",
-            "target": "intersection1",
-            "max_speed": 10
-        },
-        "road16": {
-            "id": "road16",
-            "name": "انقلاب اسلامی",
-            "source": "intersection1",
-            "target": "intersection8",
-            "max_speed": 10
-        },
-        "road17": {
-            "id": "road17",
-            "name": "شانزده آدر",
-            "source": "intersection7",
-            "target": "intersection8",
-            "max_speed": 10
-        },
-        "road18": {
-            "id": "road18",
-            "name": "شانزده آذر",
-            "source": "intersection8",
-            "target": "intersection7",
-            "max_speed": 10
-        },
-        "road19": {
-            "id": "road19",
-            "name": "دوازده فروردین",
-            "source": "intersection9",
-            "target": "intersection8",
-            "max_speed": 10
-        },
-        "road20": {
-            "id": "road20",
-            "name": "دوازده فروردین",
-            "source": "intersection8",
-            "target": "intersection9",
-            "max_speed": 10
-        },
-        "road21": {
-            "id": "road21",
-            "name": "جمهوری",
-            "source": "intersection9",
-            "target": "intersection5",
-            "max_speed": 10
-        },
-        "road22": {
-            "id": "road22",
-            "name": "جمهوری",
-            "source": "intersection5",
-            "target": "intersection9",
-            "max_speed": 10
-        },
-        "road23": {
-            "id": "road23",
-            "name": "انقلاب",
-            "source": "intersection8",
-            "target": "intersection10",
-            "max_speed": 10
-        },
-        "road24": {
-            "id": "road24",
-            "name": "انقلاب",
-            "source": "intersection10",
-            "target": "intersection8",
-            "max_speed": 10
-        },
-        "road25": {
-            "id": "road25",
             "name": "توحید جنوبی",
             "source": "intersection4",
             "target": "intersection11",
             "max_speed": 10
         },
+
+        "road12": {
+            "id": "road12",
+            "name": "جمهوری اسلامی",
+            "source": "intersection5",
+            "target": "intersection9",
+            "max_speed": 10
+        },
+        "road13": {
+            "id": "road13",
+            "name": "کارگر جنوبی",
+            "source": "intersection5",
+            "target": "intersection1",
+            "max_speed": 10
+        },
+        "road14": {
+            "id": "road14",
+            "name": "جمهوری",
+            "source": "intersection5",
+            "target": "intersection4",
+            "max_speed": 10
+        },
+
+        "road15": {
+            "id": "road15",
+            "name": "کارگر شمالی",
+            "source": "intersection6",
+            "target": "intersection1",
+            "max_speed": 10
+        },
+        "road16": {
+            "id": "road16",
+            "name": "بولوار کشاورز",
+            "source": "intersection6",
+            "target": "intersection7",
+            "max_speed": 10
+        },
+
+        "road17": {
+            "id": "road17",
+            "name": "بولوار کشاورز",
+            "source": "intersection7",
+            "target": "intersection6",
+            "max_speed": 10
+        },
+        "road18": {
+            "id": "road18",
+            "name": "شانزده آدر",
+            "source": "intersection7",
+            "target": "intersection8",
+            "max_speed": 10
+        },
+
+        "road19": {
+            "id": "road19",
+            "name": "انقلاب اسلامی",
+            "source": "intersection8",
+            "target": "intersection10",
+            "max_speed": 10
+        },
+        "road20": {
+            "id": "road20",
+            "name": "شانزده آذر",
+            "source": "intersection8",
+            "target": "intersection7",
+            "max_speed": 10
+        },
+        "road21": {
+            "id": "road21",
+            "name": "دوازده فروردین",
+            "source": "intersection8",
+            "target": "intersection1",
+            "max_speed": 10
+        },
+        "road22": {
+            "id": "road22",
+            "name": "انقلاب",
+            "source": "intersection8",
+            "target": "intersection9",
+            "max_speed": 10
+        },
+
+        "road23": {
+            "id": "road23",
+            "name": "دوازده فروردین",
+            "source": "intersection9",
+            "target": "intersection8",
+            "max_speed": 10
+        },
+        "road24": {
+            "id": "road24",
+            "name": "جمهوری",
+            "source": "intersection9",
+            "target": "intersection5",
+            "max_speed": 10
+        },
+
+        "road25": {
+            "id": "road25",
+            "name": "انقلاب",
+            "source": "intersection10",
+            "target": "intersection8",
+            "max_speed": 10
+        },
+
         "road26": {
             "id": "road26",
             "name": "توحید جنوبی",
@@ -413,14 +423,8 @@ var map_1_data = {
     "carsNumber": 30,
     "time": 10,
     "start_lane_ids": [
-      // 'road6',
-      // 'road7',
-      // 'road46',
-      // 'road47',
-      // 'road50',
-      // 'road51',
-        'road4',
-        'road24',
+        'road8',
+        'road25',
         'road26',
     ]
 };
@@ -434,12 +438,11 @@ var map_1_data = {
 
   // Create quick reference variables for speed access to core prototypes.
   var
-    push             = ArrayProto.push,
-    slice            = ArrayProto.slice,
-    concat           = ArrayProto.concat,
-    toString         = ObjProto.toString,
-    hasOwnProperty   = ObjProto.hasOwnProperty;
-var
+    push               = ArrayProto.push,
+    slice              = ArrayProto.slice,
+    concat             = ArrayProto.concat,
+    toString           = ObjProto.toString,
+    hasOwnProperty     = ObjProto.hasOwnProperty,
     nativeForEach      = ArrayProto.forEach,
     nativeMap          = ArrayProto.map,
     nativeReduce       = ArrayProto.reduce,
@@ -1394,8 +1397,7 @@ TRAFFIC.Intersection.prototype = {
         return result;
     },
     toJSON : function() {
-        var obj;
-        return obj = { id: this.id, rect: this.rect };
+        return { id: this.id, rect: this.rect };
     },
     update : function() {
         var road, _i, _j, _len, _len1, _ref, _ref1, _results;
@@ -1417,6 +1419,7 @@ TRAFFIC.STATE = [ { RED: 0, GREEN: 1 } ];
 
 TRAFFIC.ControlSignals = function (intersection) {
     this.intersection = intersection;
+    this.rect = intersection.rect;
     this.onTick = TRAFFIC.binding(this.onTick, this);
     this.time = 0;
     this.flipMultiplier = 1 + ( TRAFFIC.random() * 0.4 - 0.2);
@@ -1488,7 +1491,7 @@ TRAFFIC.ControlSignals.prototype = {
     }
 }
 
-TRAFFIC.ControlSignals.prototype.states = [['L', '', 'L', ''], ['FR', '', 'FR', ''], ['', 'L', '', 'L'], ['', 'FR', '', 'FR']];
+TRAFFIC.ControlSignals.prototype.states = [['FRL', '', '', ''],['', 'FRL', '', ''],['', '','FRL', ''],['', '', '', 'FRL']];
 TRAFFIC.LanePosition = function (car, lane, position) {
     this.car = car;
     this.position = position;
