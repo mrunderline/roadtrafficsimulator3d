@@ -1,4 +1,5 @@
 TRAFFIC.Lane = function (sourceSegment, targetSegment, road) {
+    this.id = TRAFFIC.uniqueId('lane');
     this.sourceSegment = sourceSegment;
     this.targetSegment = targetSegment;
     this.road = road;
