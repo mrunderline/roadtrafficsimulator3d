@@ -50,6 +50,7 @@
     inter_mate;
 
   var updateInt;
+  var EPSILON = 0.000000001;
 
   var sets = {timeFactor: 5};
 
@@ -327,6 +328,16 @@
       }
 
       var c = new THREE.Mesh(g, road_mat);
+      c.name = road.id;
+      c.callback = function () {
+        var clickedRoadId = this.name;
+        var road = world.roads.all()[clickedRoadId];
+        if (road.max_speed == EPSILON) {
+          road.max_speed = map_1_data.roads[clickedRoadId].max_speed
+        } else {
+          road.max_speed = EPSILON;
+        }
+      }
       scene.add(c);
 
 
@@ -450,6 +461,26 @@
           }
         }
       }
+    }
+  }
+
+  window.addEventListener('click', onDocumentMouseDown, false);
+
+  var raycaster = new THREE.Raycaster();
+  var mouse = new THREE.Vector2();
+
+  function onDocumentMouseDown(event) {
+    event.preventDefault();
+    mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+    mouse.y = -(event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children);
+    if (intersects.length > 0) {
+      for (var intersect of intersects) {
+        if (intersect.object && typeof intersect.object.callback == "function")
+          intersect.object.callback();
+      }
+
     }
   }
 
