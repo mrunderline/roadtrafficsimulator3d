@@ -150,28 +150,28 @@ var map_1_data = {
             "name": "انقلاب اسلامی",
             "source": "intersection1",
             "target": "intersection8",
-            "max_speed": 10
+            "max_speed": 30
         },
         "road2": {
             "id": "road2",
             "name": "کارگر جنوبی",
             "source": "intersection1",
             "target": "intersection6",
-            "max_speed": 10
+            "max_speed": 30
         },
         "road3": {
             "id": "road3",
             "name": "آزادی",
             "source": "intersection1",
             "target": "intersection2",
-            "max_speed": 10
+            "max_speed": 30
         },
         "road4": {
             "id": "road4",
             "name": "کارگر شمالی",
             "source": "intersection1",
             "target": "intersection5",
-            "max_speed": 10
+            "max_speed": 30
         },
 
         "road5": {
@@ -201,7 +201,7 @@ var map_1_data = {
             "name": "تونل توحید",
             "source": "intersection3",
             "target": "intersection2",
-            "max_speed": 10
+            "max_speed": 30
         },
 
         "road9": {
@@ -231,21 +231,21 @@ var map_1_data = {
             "name": "جمهوری اسلامی",
             "source": "intersection5",
             "target": "intersection9",
-            "max_speed": 10
+            "max_speed": 30
         },
         "road13": {
             "id": "road13",
             "name": "کارگر جنوبی",
             "source": "intersection5",
             "target": "intersection1",
-            "max_speed": 10
+            "max_speed": 20
         },
         "road14": {
             "id": "road14",
             "name": "جمهوری",
             "source": "intersection5",
             "target": "intersection4",
-            "max_speed": 10
+            "max_speed": 20
         },
 
         "road15": {
@@ -275,7 +275,7 @@ var map_1_data = {
             "name": "شانزده آدر",
             "source": "intersection7",
             "target": "intersection8",
-            "max_speed": 10
+            "max_speed": 20
         },
 
         "road19": {
@@ -283,7 +283,7 @@ var map_1_data = {
             "name": "انقلاب اسلامی",
             "source": "intersection8",
             "target": "intersection10",
-            "max_speed": 10
+            "max_speed": 20
         },
         "road20": {
             "id": "road20",
@@ -312,14 +312,14 @@ var map_1_data = {
             "name": "دوازده فروردین",
             "source": "intersection9",
             "target": "intersection8",
-            "max_speed": 10
+            "max_speed": 20
         },
         "road24": {
             "id": "road24",
             "name": "جمهوری",
             "source": "intersection9",
             "target": "intersection5",
-            "max_speed": 10
+            "max_speed": 20
         },
 
         "road25": {
@@ -528,7 +528,8 @@ TRAFFIC.settings = {
     //fps: 30,
     lightsFlipInterval: 20,
     gridSize: 32,//14,
-    defaultTimeFactor: 5
+    defaultTimeFactor: 5,
+    max_speed: 10,
 };
 
 TRAFFIC.abs = Math.abs;
@@ -1020,7 +1021,7 @@ TRAFFIC.World.prototype = {
             road = roads[road];
             var source = inters[road.source].rect;
             var target = inters[road.target].rect;
-            this.addRoad(new TRAFFIC.Road(map[[source.x, source.y]], map[[target.x, target.y]]));
+            this.addRoad(new TRAFFIC.Road(map[[source.x, source.y]], map[[target.x, target.y]], road.max_speed));
             // this.addRoad(new TRAFFIC.Road(map[[target.x, target.y]], map[[source.x, source.y]]));
         }
         return null;
@@ -1198,8 +1199,7 @@ TRAFFIC.Car.prototype = {
     move : function(delta) {
 	    var acceleration, currentLane, preferedLane, step, turnNumber;
 	    acceleration = this.getAcceleration();
-      // var speed_limitation = this.trajectory.current.lane.road.max_speed; // TODO
-      var speed_limitation = 10;
+      var speed_limitation = this.trajectory.current.lane.road.max_speed || TRAFFIC.settings.max_speed;
       var considered_speed = this.speed;
       considered_speed += acceleration * delta;
       if (considered_speed <= speed_limitation) {
@@ -1597,12 +1597,13 @@ TRAFFIC.Pool.prototype = {
         return this.objects = {};
     }
 }
-TRAFFIC.Road = function (source, target) {
+TRAFFIC.Road = function (source, target, max_speed) {
     this.source = source;
     this.target = target;
     this.id = TRAFFIC.uniqueId('road');
     this.lanes = [];
     this.lanesNumber = null;
+    this.max_speed = max_speed;
     this.update();
 
     Object.defineProperty(this, 'length', {
