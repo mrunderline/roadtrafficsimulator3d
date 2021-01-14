@@ -530,6 +530,7 @@ TRAFFIC.settings = {
     gridSize: 32,//14,
     defaultTimeFactor: 5,
     max_speed: 10,
+    competitionType: "logistic" // valid values: traffic, logistic
 };
 
 TRAFFIC.abs = Math.abs;
@@ -1033,10 +1034,12 @@ TRAFFIC.World.prototype = {
         var car, id, intersection, _ref, _ref1, _results;
         if (delta > 1) throw Error('delta > 1');
         this.refreshCars();
-        _ref = this.intersections.all();
-        for (id in _ref) {
-            intersection = _ref[id];
-            intersection.controlSignals.onTick(delta);
+        if (TRAFFIC.settings.competitionType == "logistic") {
+            _ref = this.intersections.all();
+            for (id in _ref) {
+                intersection = _ref[id];
+                intersection.controlSignals.onTick(delta);
+            }
         }
         _ref1 = this.cars.all();
         _results = [];

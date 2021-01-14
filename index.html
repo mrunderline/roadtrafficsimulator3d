@@ -49,7 +49,7 @@
   var inter_geo, road_geo, inter_mat, inter_mat0, road_mat, inter_matx, red_mat, inter_maty, inter_matz, inter_matw,
     inter_mate;
 
-  var updateInt;
+  var mainInt, lightsInt;
   var EPSILON = 0.000000001;
 
   var sets = {timeFactor: 5};
@@ -58,7 +58,7 @@
     if (e.keyCode != 32) {
       return
     }
-    if (updateInt) {
+    if (mainInt) {
       stopSimulation();
     } else {
       startSimulation()
@@ -66,12 +66,27 @@
   }
 
   function startSimulation() {
-    updateInt = setInterval(update, 1000 / 60);
+    mainInt = setInterval(update, 1000 / 60);
+    if (TRAFFIC.settings.competitionType == "traffic")
+      lightsInt = setInterval(changeLights, 3 * 1000);
   }
 
   function stopSimulation() {
-    clearInterval(updateInt)
-    updateInt = undefined;
+    clearInterval(mainInt);
+    clearInterval(lightsInt);
+    mainInt = undefined;
+    lightsInt = undefined;
+  }
+
+  function changeLights() {
+    var randomLightStringState = function () {
+      return TRAFFIC.sample(TRAFFIC.ControlSignals.prototype.states)
+    }
+
+    Object.keys(lights).forEach(function (id) {
+      var interId = 'intersection' + id;
+      world.intersections.all()[interId].controlSignals.setStringStates(randomLightStringState())
+    })
   }
 
 
