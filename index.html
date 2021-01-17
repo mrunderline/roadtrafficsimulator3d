@@ -32,6 +32,7 @@
 <script src="js/OrbitControls.js"></script>
 <script src="js/gui.min.js"></script>
 <script src="build/traffic.js"></script>
+<p id="data"></p>
 
 <script>
   var camera, scene, renderer, controls, pool, mesh, grid;
@@ -49,6 +50,8 @@
   var inter_geo, road_geo, inter_mat, inter_mat0, road_mat, inter_matx, red_mat, inter_maty, inter_matz, inter_matw,
     inter_mate;
 
+  var updateTime = 1000 / 60, totalTime = 0;
+  var totalDistance = {};
   var mainInt, lightsInt;
   var EPSILON = 0.000000001;
 
@@ -66,7 +69,7 @@
   }
 
   function startSimulation() {
-    mainInt = setInterval(update, 1000 / 60);
+    mainInt = setInterval(update, updateTime);
     if (TRAFFIC.settings.competitionType == "traffic")
       lightsInt = setInterval(changeLights, 3 * 1000);
   }
@@ -220,6 +223,17 @@
     }
     previousTime = time;
     world.onTick(sets.timeFactor * delta / 1000);
+    var allCars = Object.values(world.cars.objects);
+    for (var x of allCars)
+      totalDistance[x.id] = x.traveledDistance;
+
+    var totalD = Object.values(totalDistance).reduce((a, b) => a + b, 0);
+    totalTime += updateTime;
+    var dataBoard = 'total traveled distance: ' + parseInt(totalD / sets.timeFactor) + 'm\n' +
+      'total time: ' + parseInt(totalTime / 1000) + 's\n' +
+      'average speed: ' + ((totalD / sets.timeFactor) / (totalTime / 1000)).toFixed(1) + 'm/s';
+    document.getElementById('data').innerText = dataBoard;
+
     //console.log(dt)
     //var dt = 0.1;
     //var dt = Math.random()

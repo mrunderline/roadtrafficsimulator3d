@@ -1141,7 +1141,7 @@ TRAFFIC.Car = function (lane, position) {
     this.trajectory = new TRAFFIC.Trajectory(this, lane, position);
     this.alive = true;
     this.preferedLane = null;
-    this.traveled_distance = 0;
+    this.traveledDistance = 0;
     this.special = false;
 
     Object.defineProperty(this, 'coords', {
@@ -1222,6 +1222,8 @@ TRAFFIC.Car.prototype = {
 	    if (this.trajectory.timeToMakeTurn(step)) {
 	        if (this.nextLane == null) return this.alive = false;
 	    }
+	    if (this.special)
+    	    this.traveledDistance += this.speed * delta;
 	    return this.trajectory.moveForward(step);
     },
     pickNextRoad : function() {
@@ -1253,11 +1255,11 @@ TRAFFIC.Car.prototype = {
 	    })();
 	    this.nextLane = nextRoad.lanes[laneNumber];
 	    if (!this.nextLane) throw Error('can not pick next lane');
-      Object.keys(map_1_data.specialCars).forEach(key => {
-        if (map_1_data.specialCars[key].id === this.id) {
-          this.traveled_distance = this.nextLane.length;
-        }
-      });
+      // Object.keys(map_1_data.specialCars).forEach(key => {
+      //   if (map_1_data.specialCars[key].id === this.id) {
+      //     this.traveled_distance = this.nextLane.length;
+      //   }
+      // });
 	    return this.nextLane;
     },
     popNextLane : function() {
