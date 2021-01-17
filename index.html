@@ -125,6 +125,36 @@
       var interId = 'intersection' + id;
       world.intersections.all()[interId].controlSignals.setStringStates(randomLightStringState())
     })
+
+    var roads = world.roads.all();
+    var currentCarNumber = {};
+    var specialRoads = [];
+    for (var id in roads) {
+      currentCarNumber[id] = 0;
+      var cars = [];
+      for (var i of [0, 1]) {
+        for (var x of Object.keys(roads[id].lanes[i].carsPositions)) {
+          if (x.startsWith('laneposition')) {
+            cars.push(roads[id].lanes[i].carsPositions[x].car.id);
+            if (roads[id].lanes[i].carsPositions[x].car.special) {
+              specialRoads.push(id);
+            }
+          }
+        }
+      }
+      currentCarNumber[id] = [...new Set(cars)].length;
+    }
+    var countedCars = Object.values(currentCarNumber).reduce((a, b) => a + b, 0);
+    console.log(currentCarNumber, countedCars, specialRoads);
+    // if (countedCars != world.carsNumber) {
+    //   for (var id in roads) {
+    //     if (Object.keys(roads[id].lanes[0].carsPositions).length) {
+    //       console.log(id);
+    //       console.log(roads[id].lanes[0].carsPositions);
+    //       console.log(roads[id].lanes[1].carsPositions);
+    //     }
+    //   }
+    // }
   }
 
 
@@ -249,7 +279,6 @@
 
   function update() {
     var time = Date.now();
-
 
     var delta = (time - previousTime) || 0;
     //if (delta > 1) {

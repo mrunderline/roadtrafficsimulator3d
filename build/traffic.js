@@ -1238,7 +1238,6 @@ TRAFFIC.Car.prototype = {
 	    }
 	    if (this.special) {
           this.traveledDistance += this.speed * delta;
-          console.log(this.speed, delta, step);
           if (step <= 0.03) {
               this.stoppedTime += 1;
           }
