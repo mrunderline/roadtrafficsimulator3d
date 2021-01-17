@@ -1142,6 +1142,7 @@ TRAFFIC.Car = function (lane, position) {
     this.alive = true;
     this.preferedLane = null;
     this.traveledDistance = 0;
+    this.stoppedTime = 0;
     this.special = false;
 
     Object.defineProperty(this, 'coords', {
@@ -1222,8 +1223,13 @@ TRAFFIC.Car.prototype = {
 	    if (this.trajectory.timeToMakeTurn(step)) {
 	        if (this.nextLane == null) return this.alive = false;
 	    }
-	    if (this.special)
-    	    this.traveledDistance += this.speed * delta;
+	    if (this.special) {
+          this.traveledDistance += this.speed * delta;
+          console.log(this.speed, delta, step);
+          if (step <= 0.03) {
+              this.stoppedTime += 1;
+          }
+      }
 	    return this.trajectory.moveForward(step);
     },
     pickNextRoad : function() {

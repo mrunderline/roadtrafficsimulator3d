@@ -51,7 +51,7 @@
     inter_mate;
 
   var updateTime = 1000 / 60, totalTime = 0;
-  var totalDistance = {};
+  var totalDistance = {}, totalStop = {};
   var mainInt, lightsInt;
   var EPSILON = 0.000000001;
 
@@ -224,14 +224,19 @@
     previousTime = time;
     world.onTick(sets.timeFactor * delta / 1000);
     var allCars = Object.values(world.cars.objects);
-    for (var x of allCars)
+    for (var x of allCars) {
       totalDistance[x.id] = x.traveledDistance;
+      totalStop[x.id] = x.stoppedTime;
+    }
+    // console.log(totalDistance.car1, totalStop.car1 * updateTime / 1000, totalStop.car1 * updateTime);
 
     var totalD = Object.values(totalDistance).reduce((a, b) => a + b, 0);
+    var totalS = Object.values(totalStop).reduce((a, b) => a + b, 0);
     totalTime += updateTime;
     var dataBoard = 'total traveled distance: ' + parseInt(totalD / sets.timeFactor) + 'm\n' +
       'total time: ' + parseInt(totalTime / 1000) + 's\n' +
-      'average speed: ' + ((totalD / sets.timeFactor) / (totalTime / 1000)).toFixed(1) + 'm/s';
+      'average speed: ' + ((totalD / sets.timeFactor) / (totalTime / 1000)).toFixed(1) + 'm/s\n' +
+      'total stop time: ' + (totalS * updateTime / 1000).toFixed(1) + 's';
     document.getElementById('data').innerText = dataBoard;
 
     //console.log(dt)
