@@ -145,7 +145,7 @@
       currentCarNumber[id] = [...new Set(cars)].length;
     }
     var countedCars = Object.values(currentCarNumber).reduce((a, b) => a + b, 0);
-    console.log(currentCarNumber, countedCars, specialRoads);
+    // console.log(currentCarNumber, countedCars, specialRoads);
     // if (countedCars != world.carsNumber) {
     //   for (var id in roads) {
     //     if (Object.keys(roads[id].lanes[0].carsPositions).length) {
@@ -267,6 +267,12 @@
     var d = grid * 0.5;
     ground.position.set(d, -0.2, d);
 
+    var cinema_mat = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('cinema.png')});
+    var cinema_geo = new THREE.PlaneBufferGeometry(grid * 8, grid * 4);
+    cinema_geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
+    var cinema = new THREE.Mesh(cinema_geo, cinema_mat);
+    cinema.position.set(grid * 3, 0.5, grid * 3);
+    scene.add(cinema);
 
     window.addEventListener('resize', onWindowResize, false);
   }
