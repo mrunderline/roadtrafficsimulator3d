@@ -32,6 +32,7 @@
 <script src="js/OrbitControls.js"></script>
 <script src="js/gui.min.js"></script>
 <script src="build/traffic.js"></script>
+<p id="data"></p>
 
 <script>
   var camera, scene, renderer, controls, pool, mesh, grid;
@@ -49,12 +50,49 @@
   var inter_geo, road_geo, inter_mat, inter_mat0, road_mat, inter_matx, red_mat, inter_maty, inter_matz, inter_matw,
     inter_mate;
 
+  var updateTime = 1000 / 60, totalTime = 0;
+  var totalDistance = {}, totalStop = {};
   var mainInt, lightsInt;
   var EPSILON = 0.000000001;
+  var pressedKeys = '';
 
   var sets = {timeFactor: 5};
 
+  function handleChallenge() {
+    var obj = pressedKeys.charAt(0).toLowerCase();
+    var id = pressedKeys.substring(1);
+    console.log(obj, id);
+    if (obj == 'r') {
+      var roadId = 'road' + id;
+      // var road = world.roads.all()[roadId];
+      // if (road.max_speed == EPSILON) {
+      //   road.max_speed = map_1_data.roads[roadId].max_speed
+      // } else {
+      //   road.max_speed = EPSILON;
+      // }
+      world.carsNumber += 10;
+      world.heavyEnter = true;
+      world.heavyEnterRoadId = roadId;
+    } else if (obj == 'c') {
+      var carId = 'car' + id;
+      var car = world.cars.all()[carId];
+      if (car.maxSpeed == EPSILON) {
+        car.maxSpeed = TRAFFIC.settings.max_speed;
+      } else {
+        car.maxSpeed = EPSILON;
+      }
+    }
+    pressedKeys = '';
+  }
+
   document.body.onkeyup = function (e) {
+    // console.log(e.keyCode, String.fromCharCode(e.keyCode));
+    if (e.keyCode == 13) {
+      handleChallenge();
+    } else {
+      pressedKeys += String.fromCharCode(e.keyCode);
+    }
+
     if (e.keyCode != 32) {
       return
     }
@@ -66,7 +104,7 @@
   }
 
   function startSimulation() {
-    mainInt = setInterval(update, 1000 / 60);
+    mainInt = setInterval(update, updateTime);
     if (TRAFFIC.settings.competitionType == "traffic")
       lightsInt = setInterval(changeLights, 3 * 1000);
   }
@@ -101,7 +139,6 @@
     pool.load('light')
     world = new TRAFFIC.World();
     world.generateMap(2, 2, 7, 1);
-    world.carsNumber = 30;
     previousTime = 0;
     sets.timeFactor = TRAFFIC.settings.defaultTimeFactor;
 
@@ -221,6 +258,22 @@
     }
     previousTime = time;
     world.onTick(sets.timeFactor * delta / 1000);
+    var allCars = Object.values(world.cars.objects);
+    for (var x of allCars) {
+      totalDistance[x.id] = x.traveledDistance;
+      totalStop[x.id] = x.stoppedTime;
+    }
+    // console.log(totalDistance.car1, totalStop.car1 * updateTime / 1000, totalStop.car1 * updateTime);
+
+    var totalD = Object.values(totalDistance).reduce((a, b) => a + b, 0);
+    var totalS = Object.values(totalStop).reduce((a, b) => a + b, 0);
+    totalTime += updateTime;
+    var dataBoard = 'total traveled distance: ' + parseInt(totalD / sets.timeFactor) + 'm\n' +
+      'total time: ' + parseInt(totalTime / 1000) + 's\n' +
+      'average speed: ' + ((totalD / sets.timeFactor) / (totalTime / 1000)).toFixed(1) + 'm/s\n' +
+      'total stop time: ' + (totalS * updateTime / 1000).toFixed(1) + 's';
+    document.getElementById('data').innerText = dataBoard;
+
     //console.log(dt)
     //var dt = 0.1;
     //var dt = Math.random()
@@ -344,15 +397,16 @@
 
       var c = new THREE.Mesh(g, road_mat);
       c.name = road.id;
-      c.callback = function () {
-        var clickedRoadId = this.name;
-        var road = world.roads.all()[clickedRoadId];
-        if (road.max_speed == EPSILON) {
-          road.max_speed = map_1_data.roads[clickedRoadId].max_speed
-        } else {
-          road.max_speed = EPSILON;
-        }
-      }
+      // c.callback = function () {
+      //   console.log(this.name);
+      //   var clickedRoadId = this.name;
+      //   var road = world.roads.all()[clickedRoadId];
+      //   if (road.max_speed == EPSILON) {
+      //     road.max_speed = map_1_data.roads[clickedRoadId].max_speed
+      //   } else {
+      //     road.max_speed = EPSILON;
+      //   }
+      // }
       scene.add(c);
 
 

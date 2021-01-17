@@ -421,12 +421,13 @@ var map_1_data = {
         }
     },
     "carsNumber": 30,
+    "specialCarsNumber": 8,
     "time": 10,
-    "start_lane_ids": [
+    "startRoadsId": [
         'road8',
         'road25',
         'road26',
-    ]
+    ],
 };
   var ctor = function(){};
   var breaker = {};
@@ -529,7 +530,7 @@ TRAFFIC.settings = {
     lightsFlipInterval: 20,
     gridSize: 32,//14,
     defaultTimeFactor: 5,
-    max_speed: 10,
+    max_speed: 30,
     competitionType: "logistic" // valid values: traffic, logistic
 };
 
@@ -1054,17 +1055,21 @@ TRAFFIC.World.prototype = {
     },
     refreshCars : function() {
         if (this.cars.length < this.carsNumber) {
-            let difference = false;
-            const current_car_ids = Object.keys(this.cars.objects);
-            Object.keys(map_1_data.specialCars).forEach(key => {
-                if (current_car_ids.indexOf(map_1_data.specialCars[key].id) < 0) {
-                    difference = true;
-                    this.addSpecialCar(map_1_data.specialCars[key]);
-                }
-            });
-            if (!difference) {
-                this.addRandomCar();
+            var allCars = Object.values(this.cars.objects);
+            var defaultCars = allCars.filter(car => {return !car.special});
+            var specialCars = allCars.filter(car => {return car.special});
+            for (var i = 0 ; i < map_1_data.specialCarsNumber - specialCars.length ; i++ ) {
+              this.addSpecialCar();
             }
+            for (var i = 0 ; i < this.carsNumber - defaultCars.length - map_1_data.specialCarsNumber ; i++ ) {
+                var roadId = null;
+                if (this.heavyEnter === true) {
+                    roadId = this.heavyEnterRoadId;
+                }
+                this.addRandomCar(roadId);
+            }
+            this.heavyEnter = null;
+            this.heavyEnterRoadId = null;
         }
         if (this.cars.length > this.carsNumber) { this.removeRandomCar(); }
     },
@@ -1077,23 +1082,17 @@ TRAFFIC.World.prototype = {
     addSpecialCars : function(special_cars_object) {
         Object.keys(special_cars_object).forEach(car_id => {
             var car_data = special_cars_object[car_id];
-            var road = this.roads.all()[TRAFFIC.sample(map_1_data.start_lane_ids)];
-            if (road != null) {
-                var car;
-                var lane = TRAFFIC.sample(road.lanes);
-                if (lane != null) { car = new TRAFFIC.Car(lane); }
-                car.makeSpecial(car_data);
-                this.addCar(car);
-            }
+            this.addSpecialCar(car_data);
         });
     },
-    addSpecialCar : function(car_data) {
-        const road = this.roads.all()[TRAFFIC.sample(map_1_data.start_lane_ids)];
+    addSpecialCar : function() {
+        const road = this.roads.all()[TRAFFIC.sample(map_1_data.startRoadsId)];
         if (road != null) {
             var car;
             var lane = TRAFFIC.sample(road.lanes);
-            if (lane != null) { car = new TRAFFIC.Car(lane); }
-            car.makeSpecial(car_data);
+            if (lane == null) { return; }
+            car = new TRAFFIC.Car(lane);
+            car.makeSpecial();
             this.addCar(car);
         }
     },
@@ -1119,28 +1118,31 @@ TRAFFIC.World.prototype = {
     getIntersection : function(id) {
         return this.intersections.get(id);
     },
-    addRandomCar : function() {
-        var road = this.roads.all()[TRAFFIC.sample(map_1_data.start_lane_ids)];
+    addRandomCar : function(roadId=null) {
+        if (roadId == null)
+            roadId = TRAFFIC.sample(map_1_data.startRoadsId);
+
+        var road = this.roads.all()[roadId];
         if (road != null) {
             var lane = TRAFFIC.sample(road.lanes);
             if (lane != null) { return this.addCar(new TRAFFIC.Car(lane)); }
         }
     },
     removeRandomCar : function() {
-        var car;
-        car = TRAFFIC.sample(this.cars.all());
+        var allCars = Object.values(this.cars.objects);
+        var defaultCars = allCars.filter(car => {return !car.special});
+        var car = TRAFFIC.sample(defaultCars);
         if (car != null) return this.removeCar(car);
     }
 }
 TRAFFIC.Car = function (lane, position) {
-    this.type = TRAFFIC.rand(TRAFFIC.TYPE_OF_CARS.length - 1);
-
+    this.type = 0;
     this.id = TRAFFIC.uniqueId('car');
     this.color = (300 + 240 * TRAFFIC.random() | 0) % 360;
     this._speed = 0;
     this.width = TRAFFIC.TYPE_OF_CARS[this.type].w * 2;//1.7;
     this.length = TRAFFIC.TYPE_OF_CARS[this.type].l * 2;//3 + 2 * TRAFFIC.random();
-    this.maxSpeed = 30;
+    this.maxSpeed = TRAFFIC.settings.max_speed;
     this.s0 = 1;
     this.timeHeadway = 1.5;
     this.maxAcceleration = 1;
@@ -1148,9 +1150,9 @@ TRAFFIC.Car = function (lane, position) {
     this.trajectory = new TRAFFIC.Trajectory(this, lane, position);
     this.alive = true;
     this.preferedLane = null;
-    this.carImage = '';
-    this.traveled_distance = 0;
-    this.is_special = false;
+    this.traveledDistance = 0;
+    this.stoppedTime = 0;
+    this.special = false;
 
     Object.defineProperty(this, 'coords', {
         get: function () {
@@ -1200,11 +1202,15 @@ TRAFFIC.Car.prototype = {
       return this.maxAcceleration * coeff;
     },
     move : function(delta) {
-	    var acceleration, currentLane, preferedLane, step, turnNumber;
-	    acceleration = this.getAcceleration();
-      var speed_limitation = this.trajectory.current.lane.road.max_speed || TRAFFIC.settings.max_speed;
-      var considered_speed = this.speed;
-      considered_speed += acceleration * delta;
+	    var acceleration, currentLane, preferedLane, step, turnNumber, considered_speed, speed_limitation;
+
+	    speed_limitation = this.trajectory.current.lane.road.max_speed || TRAFFIC.settings.max_speed;
+      if (speed_limitation > this.maxSpeed)
+          speed_limitation = this.maxSpeed;
+
+      acceleration = this.getAcceleration();
+      considered_speed = this.speed + acceleration * delta;
+
       if (considered_speed <= speed_limitation) {
           this.speed = considered_speed;
       } else {
@@ -1230,6 +1236,13 @@ TRAFFIC.Car.prototype = {
 	    if (this.trajectory.timeToMakeTurn(step)) {
 	        if (this.nextLane == null) return this.alive = false;
 	    }
+	    if (this.special) {
+          this.traveledDistance += this.speed * delta;
+          console.log(this.speed, delta, step);
+          if (step <= 0.03) {
+              this.stoppedTime += 1;
+          }
+      }
 	    return this.trajectory.moveForward(step);
     },
     pickNextRoad : function() {
@@ -1261,11 +1274,11 @@ TRAFFIC.Car.prototype = {
 	    })();
 	    this.nextLane = nextRoad.lanes[laneNumber];
 	    if (!this.nextLane) throw Error('can not pick next lane');
-      Object.keys(map_1_data.specialCars).forEach(key => {
-        if (map_1_data.specialCars[key].id === this.id) {
-          this.traveled_distance = this.nextLane.length;
-        }
-      });
+      // Object.keys(map_1_data.specialCars).forEach(key => {
+      //   if (map_1_data.specialCars[key].id === this.id) {
+      //     this.traveled_distance = this.nextLane.length;
+      //   }
+      // });
 	    return this.nextLane;
     },
     popNextLane : function() {
@@ -1275,12 +1288,9 @@ TRAFFIC.Car.prototype = {
 	    this.preferedLane = null;
 	    return nextLane;
     },
-    makeSpecial : function(special_car_data) {
-        this.id = special_car_data.id;
-        this.length = special_car_data.length;
-        this.width = special_car_data.width;
-        this.carImage = special_car_data.carImage;
-        this.is_special = true;
+    makeSpecial : function() {
+        this.special = true;
+        this.type = TRAFFIC.rand(TRAFFIC.TYPE_OF_CARS.length - 2) + 1;
     }
 }
 TRAFFIC.Lane = function (sourceSegment, targetSegment, road) {
