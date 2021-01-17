@@ -530,7 +530,7 @@ TRAFFIC.settings = {
     lightsFlipInterval: 20,
     gridSize: 32,//14,
     defaultTimeFactor: 5,
-    max_speed: 10,
+    max_speed: 30,
     competitionType: "logistic" // valid values: traffic, logistic
 };
 
@@ -1062,8 +1062,14 @@ TRAFFIC.World.prototype = {
               this.addSpecialCar();
             }
             for (var i = 0 ; i < this.carsNumber - defaultCars.length - map_1_data.specialCarsNumber ; i++ ) {
-              this.addRandomCar();
+                var roadId = null;
+                if (this.heavyEnter === true) {
+                    roadId = this.heavyEnterRoadId;
+                }
+                this.addRandomCar(roadId);
             }
+            this.heavyEnter = null;
+            this.heavyEnterRoadId = null;
         }
         if (this.cars.length > this.carsNumber) { this.removeRandomCar(); }
     },
@@ -1112,8 +1118,11 @@ TRAFFIC.World.prototype = {
     getIntersection : function(id) {
         return this.intersections.get(id);
     },
-    addRandomCar : function() {
-        var road = this.roads.all()[TRAFFIC.sample(map_1_data.startRoadsId)];
+    addRandomCar : function(roadId=null) {
+        if (roadId == null)
+            roadId = TRAFFIC.sample(map_1_data.startRoadsId);
+
+        var road = this.roads.all()[roadId];
         if (road != null) {
             var lane = TRAFFIC.sample(road.lanes);
             if (lane != null) { return this.addCar(new TRAFFIC.Car(lane)); }
@@ -1133,7 +1142,7 @@ TRAFFIC.Car = function (lane, position) {
     this._speed = 0;
     this.width = TRAFFIC.TYPE_OF_CARS[this.type].w * 2;//1.7;
     this.length = TRAFFIC.TYPE_OF_CARS[this.type].l * 2;//3 + 2 * TRAFFIC.random();
-    this.maxSpeed = 30;
+    this.maxSpeed = TRAFFIC.settings.max_speed;
     this.s0 = 1;
     this.timeHeadway = 1.5;
     this.maxAcceleration = 1;
@@ -1193,11 +1202,15 @@ TRAFFIC.Car.prototype = {
       return this.maxAcceleration * coeff;
     },
     move : function(delta) {
-	    var acceleration, currentLane, preferedLane, step, turnNumber;
-	    acceleration = this.getAcceleration();
-      var speed_limitation = this.trajectory.current.lane.road.max_speed || TRAFFIC.settings.max_speed;
-      var considered_speed = this.speed;
-      considered_speed += acceleration * delta;
+	    var acceleration, currentLane, preferedLane, step, turnNumber, considered_speed, speed_limitation;
+
+	    speed_limitation = this.trajectory.current.lane.road.max_speed || TRAFFIC.settings.max_speed;
+      if (speed_limitation > this.maxSpeed)
+          speed_limitation = this.maxSpeed;
+
+      acceleration = this.getAcceleration();
+      considered_speed = this.speed + acceleration * delta;
+
       if (considered_speed <= speed_limitation) {
           this.speed = considered_speed;
       } else {
