@@ -420,15 +420,24 @@ var map_1_data = {
             "carImage":"images/taxi.png"
         }
     },
-    "carsNumber": 30,
-    "specialCarsNumber": 8,
+    "carsNumber": 40,
+    // "specialCarsNumber": 10,
     "time": 10,
     "startRoadsId": [
         'road8',
         'road25',
         'road26',
     ],
+    "startSpecialRoadsId": [
+        'road8',
+        'road8',
+        'road8',
+        'road8',
+        'road25',
+        'road26',
+    ]
 };
+map_1_data.specialCarsNumber = map_1_data.startSpecialRoadsId.length;
   var ctor = function(){};
   var breaker = {};
 
@@ -1059,14 +1068,15 @@ TRAFFIC.World.prototype = {
             var defaultCars = allCars.filter(car => {return !car.special});
             var specialCars = allCars.filter(car => {return car.special});
             for (var i = 0 ; i < map_1_data.specialCarsNumber - specialCars.length ; i++ ) {
-              this.addSpecialCar();
+                var roadId = map_1_data.startSpecialRoadsId[i % map_1_data.specialCarsNumber];
+                this.addSpecialCar(roadId);
             }
             for (var i = 0 ; i < this.carsNumber - defaultCars.length - map_1_data.specialCarsNumber ; i++ ) {
                 var roadId = null;
                 if (this.heavyEnter === true) {
                     roadId = this.heavyEnterRoadId;
                 }
-                this.addRandomCar(roadId);
+                this.addCar(roadId);
             }
             this.heavyEnter = null;
             this.heavyEnterRoadId = null;
@@ -1085,22 +1095,11 @@ TRAFFIC.World.prototype = {
             this.addSpecialCar(car_data);
         });
     },
-    addSpecialCar : function() {
-        const road = this.roads.all()[TRAFFIC.sample(map_1_data.startRoadsId)];
-        if (road != null) {
-            var car;
-            var lane = TRAFFIC.sample(road.lanes);
-            if (lane == null) { return; }
-            car = new TRAFFIC.Car(lane);
-            car.makeSpecial();
-            this.addCar(car);
-        }
+    addSpecialCar : function(roadId=null) {
+        this.addCar(roadId, true)
     },
     getRoad : function(id) {
         return this.roads.get(id);
-    },
-    addCar : function(car) {
-        return this.cars.put(car);
     },
     getCar : function(id) {
        return this.cars.get(id);
@@ -1118,15 +1117,22 @@ TRAFFIC.World.prototype = {
     getIntersection : function(id) {
         return this.intersections.get(id);
     },
-    addRandomCar : function(roadId=null) {
+    addCar : function(roadId=null, special=false) {
         if (roadId == null)
             roadId = TRAFFIC.sample(map_1_data.startRoadsId);
 
         var road = this.roads.all()[roadId];
-        if (road != null) {
-            var lane = TRAFFIC.sample(road.lanes);
-            if (lane != null) { return this.addCar(new TRAFFIC.Car(lane)); }
-        }
+        if (road == null)
+            return;
+
+        var lane = TRAFFIC.sample(road.lanes);
+        if (lane == null)
+            return;
+
+        var car = new TRAFFIC.Car(lane);
+        if (special)
+            car.makeSpecial();
+        return this.cars.put(car);
     },
     removeRandomCar : function() {
         var allCars = Object.values(this.cars.objects);
