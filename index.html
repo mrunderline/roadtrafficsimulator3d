@@ -144,7 +144,7 @@
       }
       currentCarNumber[id] = [...new Set(cars)].length;
     }
-    var countedCars = Object.values(currentCarNumber).reduce((a, b) => a + b, 0);
+    // var countedCars = Object.values(currentCarNumber).reduce((a, b) => a + b, 0);
     // console.log(currentCarNumber, countedCars, specialRoads);
     // if (countedCars != world.carsNumber) {
     //   for (var id in roads) {
@@ -175,7 +175,7 @@
     gui = new dat.GUI();
     var guiWorld = gui.addFolder('world');
     guiWorld.open();
-    guiWorld.add(sets, 'timeFactor', 0.1, 10).listen();
+    // guiWorld.add(sets, 'timeFactor', 0.1, 10).listen();
     guiWorld.add(world, 'carsNumber').min(0).max(200).step(1).listen();
     guiWorld.add(world, 'instantSpeed').step(0.00001).listen();
     guiWorld.add(TRAFFIC.settings, 'lightsFlipInterval', 0, 50, 0.01).listen();
@@ -292,6 +292,7 @@
       delta = 100;
     }
     previousTime = time;
+    world.totalTime += updateTime / 1000;
     world.onTick(sets.timeFactor * delta / 1000);
     var allCars = Object.values(world.cars.objects);
     for (var x of allCars) {
@@ -302,17 +303,11 @@
 
     var totalD = Object.values(totalDistance).reduce((a, b) => a + b, 0);
     var totalS = Object.values(totalStop).reduce((a, b) => a + b, 0);
-    totalTime += updateTime;
     var dataBoard = 'total traveled distance: ' + parseInt(totalD / sets.timeFactor) + 'm\n' +
-      'total time: ' + parseInt(totalTime / 1000) + 's\n' +
-      'average speed: ' + ((totalD / sets.timeFactor) / (totalTime / 1000)).toFixed(1) + 'm/s\n' +
+      'total time: ' + parseInt(world.totalTime) + 's\n' +
+      'average speed: ' + ((totalD / sets.timeFactor) / world.totalTime).toFixed(1) + 'm/s\n' +
       'total stop time: ' + (totalS * updateTime / 1000).toFixed(1) + 's';
     document.getElementById('data').innerText = dataBoard;
-
-    //console.log(dt)
-    //var dt = 0.1;
-    //var dt = Math.random()
-    //world.onTick(0.1);
 
     var o0, o1, o2, o3, id;
 

@@ -435,7 +435,13 @@ var map_1_data = {
         'road8',
         'road25',
         'road26',
-    ]
+    ],
+    challenges: [{
+        startTime: 120,
+        endTime: 120 + 10 * 5,
+        x: [-10,10],
+        y: [16, 32]
+    }]
 };
 map_1_data.specialCarsNumber = map_1_data.startSpecialRoadsId.length;
   var ctor = function(){};
@@ -727,6 +733,8 @@ TRAFFIC.map = function(obj, iterator, context){
     });
     return results;
 }
+
+var firstChallenge = TRAFFIC.sample(map_1_data.challenges)
 
 
 TRAFFIC.Point = function (_at_x, _at_y) {
@@ -1035,12 +1043,18 @@ TRAFFIC.World.prototype = {
             this.addRoad(new TRAFFIC.Road(map[[source.x, source.y]], map[[target.x, target.y]], road.max_speed));
             // this.addRoad(new TRAFFIC.Road(map[[target.x, target.y]], map[[source.x, source.y]]));
         }
-        return null;
+        this.totalTime = 0;
     },
     clear : function() {
         return this.set({});
     },
-    onTick : function(delta) {
+    onTick : function(delta, ) {
+        if (this.totalTime > firstChallenge.endTime && this.totalTime < firstChallenge.endTime + 1) {
+            var allCars = this.cars.all();
+            for(var id in allCars) {
+                allCars[id].maxSpeed = TRAFFIC.settings.max_speed;
+            }
+        }
         var car, id, intersection, _ref, _ref1, _results;
         if (delta > 1) throw Error('delta > 1');
         this.refreshCars();
@@ -1056,6 +1070,12 @@ TRAFFIC.World.prototype = {
         for (id in _ref1) {
             car = _ref1[id];
             car.move(delta);
+            if (this.totalTime > firstChallenge.startTime && this.totalTime < firstChallenge.endTime) {
+                if (car.coords.x > firstChallenge.x[0] && car.coords.x < firstChallenge.x[1] &&
+                  car.coords.y > firstChallenge.y[0] && car.coords.y < firstChallenge.y[1]) {
+                    car.maxSpeed = EPSILON;
+                }
+            }
             //this.debug.innerHTML = id + '|'+car.coords.x +','+ car.coords.y;
             if (!car.alive) _results.push(this.removeCar(car));
             else _results.push(void 0);
