@@ -93,6 +93,32 @@
       pressedKeys += String.fromCharCode(e.keyCode);
     }
 
+    if (e.keyCode == 96) {
+      var allCars = world.cars.all();
+      var carRoad = {};
+      for (id in allCars){
+        carRoad[id] = []
+      }
+      var roads = world.roads.all();
+      for (var id in roads) {
+        for (var i of [0, 1]) {
+          for (var x of Object.keys(roads[id].lanes[i].carsPositions)) {
+            if (x.startsWith('laneposition')) {
+              carRoad[roads[id].lanes[i].carsPositions[x].car.id].push([id, i])
+            }
+          }
+        }
+      }
+      var allCars = world.cars.all()
+      for (var id in carRoad) {
+        if (carRoad[id].length == 2){
+          if (allCars[id].speed < EPSILON) {
+            world.removeCar(allCars[id]);
+          }
+        }
+      }
+    }
+
     if (e.keyCode != 32) {
       return
     }
@@ -268,11 +294,17 @@
     ground.position.set(d, -0.2, d);
 
     var cinema_mat = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('cinema.png')});
-    var cinema_geo = new THREE.PlaneBufferGeometry(grid * 8, grid * 4);
+    var cinema_geo = new THREE.PlaneBufferGeometry(grid * 4, grid * 2);
     cinema_geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
     var cinema = new THREE.Mesh(cinema_geo, cinema_mat);
-    cinema.position.set(grid * 3, 0.5, grid * 3);
+    cinema.position.set(grid * 5, 0.5, grid * 2);
     scene.add(cinema);
+
+    var geo = new THREE.PlaneBufferGeometry(20, 2*grid);
+    geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
+    var red = new THREE.Mesh(geo, red_mat);
+    red.position.set(0, 0.5, grid / 2);
+    scene.add(red);
 
     window.addEventListener('resize', onWindowResize, false);
   }
