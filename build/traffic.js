@@ -437,10 +437,13 @@ var map_1_data = {
         'road26',
     ],
     challenges: [{
-        startTime: 120,
-        endTime: 120 + 10 * 5,
+        type: 'stop',
         x: [-10,10],
         y: [16, 32]
+    }, {
+        type: 'heavy',
+        roadId: 'road1',
+        carsCount: 10
     }]
 };
 map_1_data.specialCarsNumber = map_1_data.startSpecialRoadsId.length;
@@ -734,7 +737,26 @@ TRAFFIC.map = function(obj, iterator, context){
     return results;
 }
 
-var firstChallenge = TRAFFIC.sample(map_1_data.challenges)
+Number.prototype.between = function(min, max) {
+    return this > min && this < max;
+};
+
+Array.prototype.sum = function () {
+    return this.reduce((a, b) => a + b, 0)
+}
+
+
+var challenges = TRAFFIC.shuffle(map_1_data.challenges);
+var startTimes = [10, 20];
+var challengeDuration = 5 * 10;
+var challengeCount = startTimes.length;
+for (var i=0;i<challengeCount;i++) {
+    challenges[i].startTime = startTimes[i];
+    challenges[i].endTime = startTimes[i] + challengeDuration;
+}
+var stopChallenge = challenges.find(ch => {if (ch.type =='stop') return ch});
+var heavyChallenge = challenges.find(ch => {if (ch.type =='heavy') return ch});
+console.log(stopChallenge, heavyChallenge);
 
 
 TRAFFIC.Point = function (_at_x, _at_y) {
@@ -1049,11 +1071,17 @@ TRAFFIC.World.prototype = {
         return this.set({});
     },
     onTick : function(delta, ) {
-        if (this.totalTime > firstChallenge.endTime && this.totalTime < firstChallenge.endTime + 1) {
+        if (this.totalTime.between(stopChallenge.endTime, stopChallenge.endTime + 1)) {
             var allCars = this.cars.all();
             for(var id in allCars) {
                 allCars[id].maxSpeed = TRAFFIC.settings.max_speed;
             }
+        }
+        if (this.totalTime > heavyChallenge.startTime && !heavyChallenge.occurred) {
+            this.carsNumber += heavyChallenge.carsCount;
+            this.heavyEnterRoadId = heavyChallenge.roadId;
+            this.heavyEnter = true;
+            heavyChallenge.occurred = true;
         }
         var car, id, intersection, _ref, _ref1, _results;
         if (delta > 1) throw Error('delta > 1');
@@ -1070,9 +1098,9 @@ TRAFFIC.World.prototype = {
         for (id in _ref1) {
             car = _ref1[id];
             car.move(delta);
-            if (this.totalTime > firstChallenge.startTime && this.totalTime < firstChallenge.endTime) {
-                if (car.coords.x > firstChallenge.x[0] && car.coords.x < firstChallenge.x[1] &&
-                  car.coords.y > firstChallenge.y[0] && car.coords.y < firstChallenge.y[1]) {
+            if (this.totalTime.between(stopChallenge.startTime, stopChallenge.endTime)) {
+                if (car.coords.x.between(stopChallenge.x[0], stopChallenge.x[1]) &&
+                  car.coords.y.between(stopChallenge.y[0], stopChallenge.y[1])) {
                     car.maxSpeed = EPSILON;
                 }
             }

@@ -87,11 +87,11 @@
 
   document.body.onkeyup = function (e) {
     // console.log(e.keyCode, String.fromCharCode(e.keyCode));
-    if (e.keyCode == 13) {
-      handleChallenge();
-    } else {
-      pressedKeys += String.fromCharCode(e.keyCode);
-    }
+    // if (e.keyCode == 13) {
+    //   handleChallenge();
+    // } else {
+    //   pressedKeys += String.fromCharCode(e.keyCode);
+    // }
 
     if (e.keyCode == 96) {
       var allCars = world.cars.all();
@@ -333,8 +333,8 @@
     }
     // console.log(totalDistance.car1, totalStop.car1 * updateTime / 1000, totalStop.car1 * updateTime);
 
-    var totalD = Object.values(totalDistance).reduce((a, b) => a + b, 0);
-    var totalS = Object.values(totalStop).reduce((a, b) => a + b, 0);
+    var totalD = Object.values(totalDistance).sum();
+    var totalS = Object.values(totalStop).sum();
     var dataBoard = 'total traveled distance: ' + parseInt(totalD / sets.timeFactor) + 'm\n' +
       'total time: ' + parseInt(world.totalTime) + 's\n' +
       'average speed: ' + ((totalD / sets.timeFactor) / world.totalTime).toFixed(1) + 'm/s\n' +
