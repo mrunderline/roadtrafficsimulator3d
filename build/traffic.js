@@ -447,16 +447,15 @@ var map_1_data = {
     }]
 };
 map_1_data.specialCarsNumber = map_1_data.startSpecialRoadsId.length;
-  var ctor = function(){};
-  var breaker = {};
 
+var ctor = function(){};
+var breaker = {};
 
+// Save bytes in the minified (but not gzipped) version:
+var ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype;
 
-  // Save bytes in the minified (but not gzipped) version:
-  var ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype;
-
-  // Create quick reference variables for speed access to core prototypes.
-  var
+// Create quick reference variables for speed access to core prototypes.
+var
     push               = ArrayProto.push,
     slice              = ArrayProto.slice,
     concat             = ArrayProto.concat,
@@ -564,10 +563,9 @@ var nativeForEach = null;
 var nativeMap = null;
 var nativeBind = null;*/
 
-TRAFFIC.binding = function(fn, me){
+TRAFFIC.binding = function(fn, me) {
 	return function(){ return fn.apply(me, arguments); };
 }
-
 TRAFFIC.bind = function(func, context) {
     var args, bound;
     if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
@@ -583,6 +581,7 @@ TRAFFIC.bind = function(func, context) {
       return self;
     };
 }
+
 TRAFFIC.indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 
@@ -756,7 +755,6 @@ for (var i=0;i<challengeCount;i++) {
 }
 var stopChallenge = challenges.find(ch => {if (ch.type =='stop') return ch});
 var heavyChallenge = challenges.find(ch => {if (ch.type =='heavy') return ch});
-console.log(stopChallenge, heavyChallenge);
 
 
 TRAFFIC.Point = function (_at_x, _at_y) {
@@ -781,7 +779,6 @@ TRAFFIC.Point = function (_at_x, _at_y) {
         }
     });
 }
-
 TRAFFIC.Point.prototype = {
     constructor: TRAFFIC.Point,
     add : function(o) {
@@ -797,6 +794,7 @@ TRAFFIC.Point.prototype = {
         return new TRAFFIC.Point(this.x / k, this.y / k);
     }
 }
+
 TRAFFIC.Rect = function (x, y, _width, _height) {
     this.x = x || 0;
     this.y = y || 0;
@@ -873,6 +871,7 @@ TRAFFIC.Rect.prototype = {
         return this.getSide(this.getSectorId(point));
     }
 }
+
 TRAFFIC.Curve = function (_at_A, _at_B, _at_O, _at_Q) {
     this.A = _at_A;
     this.B = _at_B;
@@ -901,7 +900,6 @@ TRAFFIC.Curve = function (_at_A, _at_B, _at_O, _at_Q) {
         }
     });
 }
-
 TRAFFIC.Curve.prototype = {
     constructor: TRAFFIC.Curve,
     getPoint : function(a) {
@@ -952,7 +950,6 @@ TRAFFIC.Segment = function (source, target) {
         }
     });
 }
-
 TRAFFIC.Segment.prototype = {
     constructor: TRAFFIC.Segment,
     split : function(n, reverse) {
@@ -984,6 +981,7 @@ TRAFFIC.Segment.prototype = {
         return new TRAFFIC.Segment(start, end);
     }
 }
+
 TRAFFIC.World = function () {
     this.toRemove = [];
     this.onTick = TRAFFIC.bind(this.onTick, this);
@@ -998,7 +996,6 @@ TRAFFIC.World = function () {
         }
     });
 }
-
 TRAFFIC.World.prototype = {
     constructor: TRAFFIC.World,
     set : function(obj) {
@@ -1189,6 +1186,7 @@ TRAFFIC.World.prototype = {
         if (car != null) return this.removeCar(car);
     }
 }
+
 TRAFFIC.Car = function (lane, position) {
     this.type = 0;
     this.id = TRAFFIC.uniqueId('car');
@@ -1231,7 +1229,6 @@ TRAFFIC.Car = function (lane, position) {
         }
     });
 }
-
 TRAFFIC.Car.prototype = {
     constructor: TRAFFIC.Car,
     release : function() {
@@ -1346,6 +1343,7 @@ TRAFFIC.Car.prototype = {
         this.type = TRAFFIC.rand(TRAFFIC.TYPE_OF_CARS.length - 2) + 1;
     }
 }
+
 TRAFFIC.Lane = function (sourceSegment, targetSegment, road) {
     this.id = TRAFFIC.uniqueId('lane');
     this.sourceSegment = sourceSegment;
@@ -1394,7 +1392,6 @@ TRAFFIC.Lane = function (sourceSegment, targetSegment, road) {
         }
     });
 }
-
 TRAFFIC.Lane.prototype = {
     constructor: TRAFFIC.Lane,
     toJSON:function(lane){
@@ -1449,7 +1446,6 @@ TRAFFIC.Intersection = function (rect) {
     this.inRoads = [];
     this.controlSignals = new TRAFFIC.ControlSignals(this);
 }
-
 TRAFFIC.Intersection.prototype = {
     constructor: TRAFFIC.Intersection,
     copy : function(intersection) {
@@ -1481,8 +1477,8 @@ TRAFFIC.Intersection.prototype = {
         return _results;
     }
 }
-TRAFFIC.STATE = [ { RED: 0, GREEN: 1 } ];
 
+TRAFFIC.STATE = [ { RED: 0, GREEN: 1 } ];
 TRAFFIC.ControlSignals = function (intersection) {
     this.intersection = intersection;
     this.rect = intersection.rect;
@@ -1517,7 +1513,6 @@ TRAFFIC.ControlSignals = function (intersection) {
         }
     });
 }
-
 TRAFFIC.ControlSignals.prototype = {
     constructor: TRAFFIC.ControlSignals,
     _decode : function(str) {
@@ -1556,8 +1551,8 @@ TRAFFIC.ControlSignals.prototype = {
         }
     }
 }
-
 TRAFFIC.ControlSignals.prototype.states = [['FRL', '', '', ''],['', 'FRL', '', ''],['', '','FRL', ''],['', '', '', 'FRL']];
+
 TRAFFIC.LanePosition = function (car, lane, position) {
     this.car = car;
     this.position = position;
@@ -1595,7 +1590,6 @@ TRAFFIC.LanePosition = function (car, lane, position) {
         }
     });
 }
-
 TRAFFIC.LanePosition.prototype = {
     constructor: TRAFFIC.LanePosition,
     acquire : function() {
@@ -1616,6 +1610,7 @@ TRAFFIC.LanePosition.prototype = {
         if (this.lane && !this.free) return this.lane.getNext(this);
     }
 }
+
 TRAFFIC.Pool = function (factory, pool) {
     var k, v, _ref;
     this.factory = factory;
@@ -1634,7 +1629,6 @@ TRAFFIC.Pool = function (factory, pool) {
         }
     });
 }
-
 TRAFFIC.Pool.prototype = {
     constructor: TRAFFIC.Pool,
     toJSON : function() {
@@ -1663,6 +1657,7 @@ TRAFFIC.Pool.prototype = {
         return this.objects = {};
     }
 }
+
 TRAFFIC.Road = function (source, target, max_speed) {
     this.source = source;
     this.target = target;
@@ -1690,7 +1685,6 @@ TRAFFIC.Road = function (source, target, max_speed) {
         }
     });
 }
-
 TRAFFIC.Road.prototype = {
     constructor: TRAFFIC.Road,
     copy : function(road) {
@@ -1741,6 +1735,7 @@ TRAFFIC.Road.prototype = {
         return _results;
     }
 }
+
 TRAFFIC.Trajectory = function (car, lane, position) {
     this.car = car;
     if (position == null) position = 0;
@@ -1810,7 +1805,6 @@ TRAFFIC.Trajectory = function (car, lane, position) {
         }
     });
 }
-
 TRAFFIC.Trajectory.prototype = {
     constructor: TRAFFIC.Trajectory,
     isValidTurn : function() {
