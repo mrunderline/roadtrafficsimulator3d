@@ -319,7 +319,7 @@
     var totalS = Object.values(totalStop).sum();
     var dataBoard = 'total traveled distance: ' + parseInt(totalD / sets.timeFactor) + 'm\n' +
       'total time: ' + parseInt(world.totalTime) + 's\n' +
-      'average speed: ' + ((totalD / sets.timeFactor) / world.totalTime).toFixed(1) + 'm/s\n' +
+      'average speed: ' + ((totalD / sets.timeFactor) / world.totalTime / map_1_data.specialCarsNumber).toFixed(1) + 'm/s\n' +
       'total stop time: ' + (totalS * updateTime / 1000).toFixed(1) + 's';
     document.getElementById('data').innerText = dataBoard;
 
