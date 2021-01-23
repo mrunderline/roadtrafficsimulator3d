@@ -297,7 +297,8 @@ var map_1_data = {
             "name": "دوازده فروردین",
             "source": "intersection8",
             "target": "intersection1",
-            "max_speed": 10
+            "max_speed": 10,
+            "possibleIntersections": ["intersection6", "intersection2"]
         },
         "road22": {
             "id": "road22",
@@ -1299,12 +1300,16 @@ TRAFFIC.Car.prototype = {
 	    var currentLane, intersection, nextRoad, possibleRoads;
 	    intersection = this.trajectory.nextIntersection;
 	    currentLane = this.trajectory.current.lane;
-	    possibleRoads = intersection.roads.filter(function(x) {
-	      return x.target !== currentLane.road.source;
-	    });
-	    /*possibleRoads = TRAFFIC.filter(function(x) {
-	      return x.target !== currentLane.road.source;
-	    }, intersection.roads);*/
+	    var possibleIntersections = map_1_data.roads[currentLane.road.id]?.possibleIntersections;
+	    if (possibleIntersections) {
+          possibleRoads = intersection.roads.filter(function(x) {
+              return possibleIntersections.indexOf(x.target.id) >= 0;
+          });
+      } else {
+          possibleRoads = intersection.roads.filter(function(x) {
+              return x.target !== currentLane.road.source;
+          });
+      }
 	    if (possibleRoads.length === 0) return null;
 	    return nextRoad = TRAFFIC.sample(possibleRoads);
     },
