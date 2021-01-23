@@ -165,6 +165,10 @@
     console.log(roadCars, specialRoads);
   }
 
+  function convertToClock(seconds) {
+    return String(parseInt(seconds / 60)).padStart(2, '0') + ':' + String(parseInt(seconds % 60)).padStart(2, '0');
+  }
+
 
   window.onload = initObject;
 
@@ -318,7 +322,7 @@
     var totalD = Object.values(totalDistance).sum();
     var totalS = Object.values(totalStop).sum();
     var dataBoard = 'total traveled distance: ' + parseInt(totalD / sets.timeFactor) + 'm\n' +
-      'total time: ' + parseInt(world.totalTime) + 's\n' +
+      'total time: ' + convertToClock(world.totalTime) + '\n' +
       'average speed: ' + ((totalD / sets.timeFactor) / world.totalTime / map_1_data.specialCarsNumber).toFixed(1) + 'm/s\n' +
       'total stop time: ' + (totalS * updateTime / 1000).toFixed(1) + 's';
     document.getElementById('data').innerText = dataBoard;
