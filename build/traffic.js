@@ -676,6 +676,8 @@ for (var i=0;i<challengeCount;i++) {
 var stopChallenge = challenges.find(ch => {if (ch.type =='stop') return ch});
 var heavyChallenge = challenges.find(ch => {if (ch.type =='heavy') return ch});
 
+var paths = ["road26", "road9", "road13", "road3"];
+
 
 TRAFFIC.Point = function (_at_x, _at_y) {
     this.x = _at_x != null ? _at_x : 0;
@@ -1126,6 +1128,7 @@ TRAFFIC.Car = function (lane, position) {
     this.traveledDistance = 0;
     this.stoppedTime = 0;
     this.special = false;
+    this.roadNumber = 0;
 
     Object.defineProperty(this, 'coords', {
         get: function () {
@@ -1231,7 +1234,16 @@ TRAFFIC.Car.prototype = {
           });
       }
 	    if (possibleRoads.length === 0) return null;
-	    return nextRoad = TRAFFIC.sample(possibleRoads);
+	    if (this.special && TRAFFIC.settings.competitionType == "logistic" && paths.length > this.roadNumber) {
+          if (this.trajectory.current.lane.road.id == paths[this.roadNumber])
+              this.roadNumber += 1;
+          nextRoad = possibleRoads.find(r => {
+              return r.id == paths[this.roadNumber];
+          });
+      } else {
+          nextRoad = TRAFFIC.sample(possibleRoads);
+      }
+	    return nextRoad;
     },
     pickNextLane : function() {
 	    var laneNumber, nextRoad, turnNumber;
