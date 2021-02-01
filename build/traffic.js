@@ -1,3 +1,6 @@
+var gridSize = 32;
+var halfGrid = gridSize / 2;
+
 var map_1_data = {
     "intersections": {
         "intersection1": {
@@ -339,90 +342,7 @@ var map_1_data = {
             "max_speed": 10
         }
     },
-    "specialCars" : {
-        "spcar01":{
-            "id": "car01",
-            "type": "bus",
-            "length": 10,
-            "width": 2,
-            "name": "Bus1",
-            "carImage":"images/bus.png"
-        },
-        "spcar02":{
-            "id": "car02",
-            "type": "motorcycle",
-            "length": 4,
-            "width": 1.7,
-            "name": "Bus2",
-            "carImage": "images/motorcycle.png"
-        },
-        "spcar03":{
-            "id": "car03",
-            "type": "bus",
-            "length": 10,
-            "width": 2,
-            "name": "Bus3",
-            "carImage":"images/bus.png"
-        },
-        "spcar04":{
-            "id": "car04",
-            "type": "motorcycle",
-            "length": 4,
-            "width": 2,
-            "name": "Bus4",
-            "carImage":"images/motorcycle.png"
-        },
-        "spcar05":{
-            "id": "car05",
-            "type": "ambulance",
-            "length": 8,
-            "width": 2.1,
-            "name": "Bus4",
-            "carImage":"images/amb.png"
-        },
-        "spcar06":{
-            "id": "car06",
-            "type": "ambulance",
-            "length": 8,
-            "width": 2.1,
-            "name": "Bus4",
-            "carImage":"images/amb.png"
-        },
-        "spcar07":{
-            "id": "car07",
-            "type": "police",
-            "length": 5,
-            "width": 2,
-            "name": "Bus4",
-            "carImage":"images/police.png"
-        },
-        "spcar08":{
-            "id": "car08",
-            "type": "police",
-            "length": 5,
-            "width": 2,
-            "name": "Bus4",
-            "carImage":"images/police.png"
-        },
-        "spcar09":{
-            "id": "car09",
-            "type": "taxi",
-            "length": 5,
-            "width": 1.6,
-            "name": "Bus4",
-            "carImage":"images/taxi.png"
-        },
-        "spcar10":{
-            "id": "car10",
-            "type": "taxi",
-            "length": 5,
-            "width": 1.6,
-            "name": "Bus4",
-            "carImage":"images/taxi.png"
-        }
-    },
     "carsNumber": 40,
-    // "specialCarsNumber": 10,
     "time": 10,
     "startRoadsId": [
         'road8',
@@ -437,19 +357,33 @@ var map_1_data = {
         'road25',
         'road26',
     ],
-    challenges: [{
+    challenges: [
+      {
         type: 'stop',
-        x: [-10,10],
-        y: [16, 32]
-    }, {
+        x: [14 * halfGrid, 15 * halfGrid],
+        y: [8 * halfGrid - 10, 8 * halfGrid + 10]
+      }, {
         type: 'heavy',
         roadId: 'road1',
         carsCount: 10
-    }]
+      }
+    ],
+    boxes: {
+        'box1': {
+            x: [0, gridSize],
+            y: [-halfGrid, halfGrid],
+            deliverSide: 'down'
+        },
+        'box2': {
+            x: [halfGrid * 15, halfGrid * 17],
+            y: [halfGrid * 8, halfGrid * 10],
+            deliverSide: 'left'
+        },
+    }
 };
 map_1_data.specialCarsNumber = map_1_data.startSpecialRoadsId.length;
 
-var ctor = function(){};
+// var ctor = function(){};
 var breaker = {};
 
 // Save bytes in the minified (but not gzipped) version:
@@ -530,23 +464,8 @@ TRAFFIC.TYPE_OF_CARS = [
 ];
 
 TRAFFIC.settings = {
-    /*colors: {
-        background: '#97a1a1',
-        redLight: 'hsl(0, 100%, 50%)',
-        greenLight: '#85ee00',
-        intersection: '#586970',
-        road: '#586970',
-        roadMarking: '#bbb',
-        hoveredIntersection: '#3d4c53',
-        tempRoad: '#aaa',
-        gridPoint: '#586970',
-        grid1: 'rgba(255, 255, 255, 0.5)',
-        grid2: 'rgba(220, 220, 220, 0.5)',
-        hoveredGrid: '#f4e8e1'
-    },*/
-    //fps: 30,
     lightsFlipInterval: 20,
-    gridSize: 32,//14,
+    gridSize: gridSize,//14,
     defaultTimeFactor: 5,
     max_speed: 30,
     competitionType: "logistic" // valid values: traffic, logistic
@@ -574,9 +493,9 @@ TRAFFIC.bind = function(func, context) {
     args = slice.call(arguments, 2);
     return bound = function() {
       if (!(this instanceof bound)) return func.apply(context, args.concat(slice.call(arguments)));
-      ctor.prototype = func.prototype;
-      var self = new ctor;
-      ctor.prototype = null;
+      // ctor.prototype = func.prototype;
+      // var self = new ctor;
+      // ctor.prototype = null;
       var result = func.apply(self, args.concat(slice.call(arguments)));
       if (Object(result) === result) return result;
       return self;
@@ -1189,6 +1108,7 @@ TRAFFIC.World.prototype = {
 }
 
 TRAFFIC.Car = function (lane, position) {
+    // this.type = TRAFFIC.rand(0, TRAFFIC.TYPE_OF_CARS.length -1);
     this.type = 0;
     this.id = TRAFFIC.uniqueId('car');
     this.color = (300 + 240 * TRAFFIC.random() | 0) % 360;
@@ -1273,11 +1193,11 @@ TRAFFIC.Car.prototype = {
 	        currentLane = this.trajectory.current.lane;
 	        turnNumber = currentLane.getTurnDirection(this.nextLane);
 	        preferedLane = (function() {
-	        switch (turnNumber) {
-	            case 0: return currentLane.leftmostAdjacent; break;
-	            case 2: return currentLane.rightmostAdjacent; break;
-	            default: return currentLane;
-	        }
+              switch (turnNumber) {
+                  case 0: return currentLane.leftmostAdjacent;
+                  case 2: return currentLane.rightmostAdjacent;
+                  default: return currentLane;
+              }
 	        })();
 	        if (preferedLane !== currentLane) {
 	            this.trajectory.changeLane(preferedLane);
@@ -1329,11 +1249,6 @@ TRAFFIC.Car.prototype = {
 	    })();
 	    this.nextLane = nextRoad.lanes[laneNumber];
 	    if (!this.nextLane) throw Error('can not pick next lane');
-      // Object.keys(map_1_data.specialCars).forEach(key => {
-      //   if (map_1_data.specialCars[key].id === this.id) {
-      //     this.traveled_distance = this.nextLane.length;
-      //   }
-      // });
 	    return this.nextLane;
     },
     popNextLane : function() {

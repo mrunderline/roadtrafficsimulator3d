@@ -44,11 +44,13 @@
   var roads = [];
   var inter = [];
   var lights = {};
+  var boxes = {};
   var red_light_mat, green_light_mat;
 
   var car_geo, car_mat = [];
-  var inter_geo, road_geo, inter_mat, inter_mat0, road_mat, inter_matx, red_mat, inter_maty, inter_matz, inter_matw,
+  var inter_geo, road_geo, inter_mat, inter_mat0, road_mat, inter_matx, inter_maty, inter_matz, inter_matw,
     inter_mate;
+  var red_mat, green_mat, yellow_mat;
 
   var updateTime = 1000 / 60, totalTime = 0;
   var totalDistance = {}, totalStop = {};
@@ -266,10 +268,12 @@
 
     inter_mat = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('roadx.png')});
     road_mat = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('road.png')});
-    red_mat = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('roadx2.png')});
+    red_mat = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('red.png')});
+    green_mat = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('green.png')});
+    yellow_mat = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('yellow.png')});
 
 
-    var t = (11 * 4) + 1
+    var t = (11 * 4) + 1;
     var g = new THREE.PlaneGeometry(grid * t, grid * t, t, t);
     g.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
     var g_mat = new THREE.MeshBasicMaterial({color: 0x303030, wireframe: true});
@@ -286,11 +290,45 @@
     cinema.position.set(grid * 5, 0.5, grid * 2);
     scene.add(cinema);
 
-    var geo = new THREE.PlaneBufferGeometry(20, 2*grid);
-    geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
-    var red = new THREE.Mesh(geo, red_mat);
-    red.position.set(0, 0.5, grid / 2);
-    scene.add(red);
+    // var geo = new THREE.PlaneBufferGeometry(2 * grid, 20);
+    // geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
+    // var red = new THREE.Mesh(geo, red_mat);
+    // red.position.set((grid / 2) * 15, 0.5, (grid / 2) * 8);
+    // scene.add(red);
+
+    for (var boxId in map_1_data.boxes) {
+      var box = map_1_data.boxes[boxId]
+      var rotaion = 0;
+      if ('up left'.indexOf(box.deliverSide) != -1)
+        rotaion = -Math.PI
+
+      if (debug = false)
+        box.deliverSide = 'aaaaaa'
+
+      console.log(box.deliverSide);
+
+      var width = box.x[1] - box.x[0];
+      var length = box.y[1] - box.y[0];
+      var position = [(box.x[0] + box.x[1]) / 2, 0.5, (box.y[0] + box.y[1]) / 2]
+      if ('right left'.indexOf(box.deliverSide) != -1) {
+        width -= grid / 2;
+        position[0] += grid / 4;
+      }
+      if ('up down'.indexOf(box.deliverSide) != -1) {
+        length -= grid / 2;
+        position[2] -= grid / 4;
+      }
+
+      var geo = new THREE.PlaneBufferGeometry(width, length);
+      geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
+      geo.applyMatrix(new THREE.Matrix4().makeRotationY(rotaion));
+
+
+      var boxMesh = new THREE.Mesh(geo, yellow_mat);
+      boxMesh.position.set(...position);
+      scene.add(boxMesh);
+      boxes[boxId] = boxMesh;
+    }
 
     window.addEventListener('resize', onWindowResize, false);
   }
@@ -496,6 +534,21 @@
       var r = car.direction;
       cars[id].position.set(p.x, 0, p.y);
       cars[id].rotation.y = -r + (Math.PI * 0.5);
+
+      if (car.special) {
+        for (var boxId in boxes) {
+          var box = boxes[boxId];
+          var boxData = map_1_data.boxes[boxId];
+          if (p.x.between(boxData.x[0], boxData.x[1]) &&
+              p.y.between(boxData.y[0], boxData.y[1])) {
+            box.material = green_mat;
+            car.maxSpeed = EPSILON;
+            setTimeout(function () {
+              car.maxSpeed = TRAFFIC.settings.max_speed;
+            }, 2000);
+          }
+        }
+      }
     }
   }
 
