@@ -447,20 +447,16 @@ var
 var TRAFFIC = {};
 
 TRAFFIC.TYPE_OF_CARS = [
-   { w:1.8, l:4.8, h:1.4, m:'car001', name:'fordM' },
-   { w:1.8, l:4.5, h:1.8, m:'car002', name:'vaz' },
-   { w:2.2, l:5.0, h:1.5, m:'car003', name:'coupe' },
-   { w:2.2, l:5.2, h:1.9, m:'car004', name:'c4' },
-   { w:2.2, l:5.2, h:1.8, m:'car005', name:'ben' },
-   { w:2.1, l:5.4, h:1.7, m:'car006', name:'taxi' },
-   { w:2.2, l:5.4, h:1.9, m:'car007', name:'207' },
-   { w:2.3, l:5.9, h:1.7, m:'car008', name:'police' },
-   { w:2.7, l:6.2, h:2.6, m:'car009', name:'van1' },
-   { w:2.2, l:6.6, h:2.8, m:'car010', name:'van2' },
-   { w:2.8, l:7.0, h:3.2, m:'car011', name:'van3' },
-   { w:2.8, l:8.9, h:3.9, m:'car012', name:'truck1' },
-   { w:3.0, l:10.6, h:3.4, m:'car013', name:'truck1' },
-   { w:3.0, l:12.7, h:3.4, m:'car014', name:'bus' },
+   { w:1.8, l:3.7, h:1.4, m:'pride' },
+   { w:1.8, l:3.7, h:1.8, m:'206' },
+   { w:2.2, l:5.1, h:1.5, m:'samand' },
+   { w:2.2, l:5.6, h:1.9, m:'benz polic' },
+   { w:2.3, l:5.9, h:1.7, m:'van taxi' },
+   { w:2.2, l:6.0, h:1.8, m:'vanet' },
+   { w:2.7, l:6.8, h:2.6, m:'ambulance' },
+   { w:2.2, l:8.3, h:2.8, m:'minibus' },
+   { w:2.1, l:9.9, h:1.7, m:'miler benz' },
+   { w:2.2, l:11.0, h:1.9, m:'jarsaghil' },
 ];
 
 TRAFFIC.settings = {

@@ -176,11 +176,10 @@
 
   function initObject() {
     pool = new V.SeaPool()
-    pool.load('cars', init);
+    pool.load('final', init);
   }
 
   function init() {
-    pool.load('light')
     world = new TRAFFIC.World();
     world.generateMap(2, 2, 7, 1);
     previousTime = 0;
@@ -241,12 +240,12 @@
     for (var i = 0; i < 1; i++)
       car_mat[i] = new THREE.MeshBasicMaterial({envMap: env, reflectivity: 0.9});
 
-    var img = new Image();
-    img.src = 'cars.png';
-    img.onload = () => {
-      for (var i = 0; i < car_mat.length; i++)
-        generateRandomColor(img, car_mat[i]);
-    }
+    // var img = new Image();
+    // img.src = 'cars.png';
+    // img.onload = () => {
+    //   for (var i = 0; i < car_mat.length; i++)
+    //     generateRandomColor(img, car_mat[i]);
+    // }
 
     red_light_mat = new THREE.MeshBasicMaterial({envMap: env, reflectivity: 0.9});
     green_light_mat = new THREE.MeshBasicMaterial({envMap: env, reflectivity: 0.9});
@@ -523,7 +522,7 @@
     var id = car.id.substring(3);
     if (cars[id] == null) {
       var r = V.randInt(0, car_mat.length - 1);
-      var c = new THREE.Mesh(pool.getGeometry('cars', TRAFFIC.TYPE_OF_CARS[car.type].m), car_mat[r]);
+      var c = new THREE.Mesh(pool.getGeometry('final', TRAFFIC.TYPE_OF_CARS[car.type].m), car_mat[r]);
       scene.add(c);
       c.position.set(11000, 0, 0);
       c.scale.set(2, 2, -2);
@@ -604,10 +603,10 @@
 
         var side = getSide(road)
         var signX = side[1], signY = side[0];
-        var offSet = grid - 5;
+        var offSet = grid / 2 + 2;
         var offSetX = signX * offSet, offSetY = signY * offSet;
 
-        lights[id][side[2]] = new THREE.Mesh(pool.getGeometry('light', 'light'), red_light_mat);
+        lights[id][side[2]] = new THREE.Mesh(pool.getGeometry('final', 'light'), red_light_mat);
         var light = intersection.controlSignals;
         var lightCenter = light.rect.center();
         lights[id][side[2]].position.set(lightCenter.x + offSetX, 0, lightCenter.y + offSetY);
@@ -659,9 +658,9 @@
   V.getHexColor = function (color) {
     var carcolors = [
       [0xFFFFFF, 0xD0D1D3, 0XEFEFEF, 0xEEEEEE],//white
-      [0x252122, 0x302A2B, 0x27362B, 0x2F312B],//black
-      [0x8D9495, 0xC1C0BC, 0xCED4D4, 0xBEC4C4],//silver
-      [0x939599, 0x424242, 0x5A5A5A, 0x747675],//gray
+      // [0x252122, 0x302A2B, 0x27362B, 0x2F312B],//black
+      // [0x8D9495, 0xC1C0BC, 0xCED4D4, 0xBEC4C4],//silver
+      // [0x939599, 0x424242, 0x5A5A5A, 0x747675],//gray
       [0xC44920, 0xFF4421, 0x600309, 0xD9141E],//red
       [0x4AD1FB, 0x275A63, 0x118DDC, 0x2994A6],//blue
       [0xA67936, 0x874921, 0xD7A56B, 0x550007],//brown
