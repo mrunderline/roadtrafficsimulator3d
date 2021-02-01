@@ -362,7 +362,7 @@
     var dataBoard = 'total traveled distance: ' + parseInt(totalD / sets.timeFactor) + 'm\n' +
       'total time: ' + convertToClock(world.totalTime) + '\n' +
       'average speed: ' + ((totalD / sets.timeFactor) / world.totalTime / map_1_data.specialCarsNumber).toFixed(1) + 'm/s\n' +
-      'total stop time: ' + (totalS * updateTime / 1000).toFixed(1) + 's';
+      'total stop ratio: ' + (totalS * updateTime / 1000 / map_1_data.specialCarsNumber / world.totalTime).toFixed(1);
     document.getElementById('data').innerText = dataBoard;
 
     var o0, o1, o2, o3, id;
