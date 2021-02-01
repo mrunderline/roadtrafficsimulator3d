@@ -1635,7 +1635,10 @@ TRAFFIC.Road.prototype = {
         if (this.target !== other.source) throw Error('invalid roads');
         side1 = this.targetSideId;
         side2 = other.sourceSideId;
-        return turnNumber = (side2 - side1 - 1 + 8) % 4;
+        // return turnNumber = (side2 - side1 - 1 + 8) % 4;
+
+        // to fix car path in current lane
+        return turnNumber = 1;
     },
     update : function() {
         var i, sourceSplits, targetSplits, _base, _i, _j, _ref, _ref1, _results;
