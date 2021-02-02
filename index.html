@@ -505,7 +505,7 @@
       cars[id].position.set(p.x, 0, p.y);
       cars[id].rotation.y = -r + (Math.PI * 0.5);
 
-      if (car.special) {
+      if (TRAFFIC.settings.competitionType == "logistic" && car.special) {
         for (var boxId in boxes) {
           var box = boxes[boxId];
           var boxData = map_1_data.boxes[boxId];
