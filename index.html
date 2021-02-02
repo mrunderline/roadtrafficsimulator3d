@@ -52,49 +52,15 @@
     inter_mate;
   var red_mat, green_mat, yellow_mat;
 
-  var updateTime = 1000 / 60, totalTime = 0;
+  var updateTime = 1000 / 60;
   var totalDistance = {}, totalStop = {};
-  var mainInt, lightsInt;
+  var mainInt;
+  var changeLightTimes = [];
   var EPSILON = 0.000000001;
-  var pressedKeys = '';
 
   var sets = {timeFactor: 5};
 
-  function handleChallenge() {
-    var obj = pressedKeys.charAt(0).toLowerCase();
-    var id = pressedKeys.substring(1);
-    console.log(obj, id);
-    if (obj == 'r') {
-      var roadId = 'road' + id;
-      // var road = world.roads.all()[roadId];
-      // if (road.max_speed == EPSILON) {
-      //   road.max_speed = map_1_data.roads[roadId].max_speed
-      // } else {
-      //   road.max_speed = EPSILON;
-      // }
-      world.carsNumber += 10;
-      world.heavyEnter = true;
-      world.heavyEnterRoadId = roadId;
-    } else if (obj == 'c') {
-      var carId = 'car' + id;
-      var car = world.cars.all()[carId];
-      if (car.maxSpeed == EPSILON) {
-        car.maxSpeed = TRAFFIC.settings.max_speed;
-      } else {
-        car.maxSpeed = EPSILON;
-      }
-    }
-    pressedKeys = '';
-  }
-
   document.body.onkeyup = function (e) {
-    // console.log(e.keyCode, String.fromCharCode(e.keyCode));
-    // if (e.keyCode == 13) {
-    //   handleChallenge();
-    // } else {
-    //   pressedKeys += String.fromCharCode(e.keyCode);
-    // }
-
     if (e.keyCode == 96) {
       var allCars = world.cars.all();
       var carRoad = {};
@@ -133,15 +99,11 @@
 
   function startSimulation() {
     mainInt = setInterval(update, updateTime);
-    if (TRAFFIC.settings.competitionType == "traffic")
-      lightsInt = setInterval(changeLights, 3 * 1000);
   }
 
   function stopSimulation() {
     clearInterval(mainInt);
-    clearInterval(lightsInt);
     mainInt = undefined;
-    lightsInt = undefined;
   }
 
   function changeLights() {
@@ -340,6 +302,14 @@
   }
 
   function update() {
+    if (TRAFFIC.settings.competitionType == "traffic") {
+      var remaining = world.totalTime % 3;
+      if (remaining.between(0, 0.02) && changeLightTimes.indexOf(parseInt(world.totalTime)) === -1) {
+        changeLightTimes.push(parseInt(world.totalTime));
+        changeLights();
+      }
+    }
+
     var time = Date.now();
 
     var delta = (time - previousTime) || 0;
