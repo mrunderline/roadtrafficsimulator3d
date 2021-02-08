@@ -421,11 +421,18 @@ TRAFFIC.TYPE_OF_CARS = [
 
 TRAFFIC.settings = {
     lightsFlipInterval: 20,
-    gridSize: gridSize,//14,
+    gridSize: gridSize,
     defaultTimeFactor: 5,
     maxSpeed: 30,
-    competitionType: "logistic" // valid values: traffic, logistic
+    competitionType: "logistic", // valid values: traffic, logistic
+    deliveryStopTime: 3 * 1000,
+    flipLights: 5,
 };
+
+if (TRAFFIC.settings.competitionType == 'logistic' && map_1_data.specialCarsNumber > 1){
+    alert('competition type and special cars number are not compatible!');
+    throw new Error();
+}
 
 TRAFFIC.abs = Math.abs;
 TRAFFIC.sqrt = Math.sqrt;
@@ -623,16 +630,16 @@ Array.prototype.sum = function () {
 
 var challenges = TRAFFIC.shuffle(map_1_data.challenges);
 var startTimes = [10, 20];
-var challengeDuration = 5 * 10;
+var challengeDuration = 5 * TRAFFIC.settings.flipLights;
 var challengeCount = startTimes.length;
-for (var i=0;i<challengeCount;i++) {
+for (var i=0 ; i < challengeCount ; i++) {
     challenges[i].startTime = startTimes[i];
     challenges[i].endTime = startTimes[i] + challengeDuration;
 }
-var stopChallenges = challenges.filter(ch => ch.type =='stop');
-var heavyChallenges = challenges.filter(ch => ch.type =='heavy');
 
+var stopChallenges = challenges.filter(ch => ch.type == 'stop');
 var stopChallenge = stopChallenges.shift();
+var heavyChallenges = challenges.filter(ch => ch.type == 'heavy');
 var heavyChallenge = heavyChallenges.shift();
 
 var paths = ["road26", "road9", "road13", "road3"];

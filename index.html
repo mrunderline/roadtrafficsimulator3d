@@ -258,38 +258,39 @@
     // red.position.set((grid / 2) * 15, 0.5, (grid / 2) * 8);
     // scene.add(red);
 
-    for (var boxId in map_1_data.boxes) {
-      var box = map_1_data.boxes[boxId]
-      var rotaion = 0;
-      if ('up left'.indexOf(box.deliverSide) != -1)
-        rotaion = -Math.PI
+    if (TRAFFIC.settings.competitionType == 'logistic') {
+      for (var boxId in map_1_data.boxes) {
+        var box = map_1_data.boxes[boxId]
+        var rotaion = 0;
+        if ('up left'.indexOf(box.deliverSide) != -1)
+          rotaion = -Math.PI
 
-      if (debug = false)
-        box.deliverSide = 'aaaaaa'
+        if (debug = false)
+          box.deliverSide = 'aaaaaa'
 
-      console.log(box.deliverSide);
+        console.log(box.deliverSide);
 
-      var width = box.x[1] - box.x[0];
-      var length = box.y[1] - box.y[0];
-      var position = [(box.x[0] + box.x[1]) / 2, 0.5, (box.y[0] + box.y[1]) / 2]
-      if ('right left'.indexOf(box.deliverSide) != -1) {
-        width -= grid / 2;
-        position[0] += grid / 4;
+        var width = box.x[1] - box.x[0];
+        var length = box.y[1] - box.y[0];
+        var position = [(box.x[0] + box.x[1]) / 2, 0.5, (box.y[0] + box.y[1]) / 2]
+        if ('right left'.indexOf(box.deliverSide) != -1) {
+          width -= grid / 2;
+          position[0] += grid / 4;
+        }
+        if ('up down'.indexOf(box.deliverSide) != -1) {
+          length -= grid / 2;
+          position[2] -= grid / 4;
+        }
+
+        var geo = new THREE.PlaneBufferGeometry(width, length);
+        geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
+        geo.applyMatrix(new THREE.Matrix4().makeRotationY(rotaion));
+
+        var boxMesh = new THREE.Mesh(geo, yellow_mat);
+        boxMesh.position.set(...position);
+        scene.add(boxMesh);
+        boxes[boxId] = boxMesh;
       }
-      if ('up down'.indexOf(box.deliverSide) != -1) {
-        length -= grid / 2;
-        position[2] -= grid / 4;
-      }
-
-      var geo = new THREE.PlaneBufferGeometry(width, length);
-      geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
-      geo.applyMatrix(new THREE.Matrix4().makeRotationY(rotaion));
-
-
-      var boxMesh = new THREE.Mesh(geo, yellow_mat);
-      boxMesh.position.set(...position);
-      scene.add(boxMesh);
-      boxes[boxId] = boxMesh;
     }
 
     window.addEventListener('resize', onWindowResize, false);
@@ -303,7 +304,7 @@
 
   function update() {
     if (TRAFFIC.settings.competitionType == "traffic") {
-      var remaining = world.totalTime % 3;
+      var remaining = world.totalTime % TRAFFIC.settings.flipLights;
       if (remaining.between(0, 0.02) && changeLightTimes.indexOf(parseInt(world.totalTime)) === -1) {
         changeLightTimes.push(parseInt(world.totalTime));
         changeLights();
@@ -504,7 +505,7 @@
             car.maxSpeed = EPSILON;
             setTimeout(function () {
               car.maxSpeed = TRAFFIC.settings.maxSpeed;
-            }, 2000);
+            }, TRAFFIC.settings.deliveryStopTime);
           }
         }
       }
