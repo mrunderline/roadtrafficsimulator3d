@@ -452,17 +452,6 @@
       }
 
       var c = new THREE.Mesh(g, road_mat);
-      c.name = road.id;
-      // c.callback = function () {
-      //   console.log(this.name);
-      //   var clickedRoadId = this.name;
-      //   var road = world.roads.all()[clickedRoadId];
-      //   if (road.max_speed == EPSILON) {
-      //     road.max_speed = map_1_data.roads[clickedRoadId].max_speed
-      //   } else {
-      //     road.max_speed = EPSILON;
-      //   }
-      // }
       scene.add(c);
 
 
@@ -514,7 +503,7 @@
             box.material = green_mat;
             car.maxSpeed = EPSILON;
             setTimeout(function () {
-              car.maxSpeed = TRAFFIC.settings.max_speed;
+              car.maxSpeed = TRAFFIC.settings.maxSpeed;
             }, 2000);
           }
         }
