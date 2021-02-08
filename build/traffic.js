@@ -622,6 +622,9 @@ TRAFFIC.map = function(obj, iterator, context){
 Number.prototype.between = function(min, max) {
     return this > min && this < max;
 };
+Number.prototype.betweenArr = function(limits) {
+    return this > limits[0] && this < limits[1];
+}
 
 Array.prototype.sum = function () {
     return this.reduce((a, b) => a + b, 0)
@@ -638,7 +641,6 @@ for (var i=0 ; i < challengeCount ; i++) {
 }
 
 var stopChallenges = challenges.filter(ch => ch.type == 'stop');
-var stopChallenge = stopChallenges.shift();
 var heavyChallenges = challenges.filter(ch => ch.type == 'heavy');
 var heavyChallenge = heavyChallenges.shift();
 
@@ -956,18 +958,10 @@ TRAFFIC.World.prototype = {
         return this.set({});
     },
     onTick : function(delta, ) {
-        if (this.totalTime.between(stopChallenge?.endTime, stopChallenge?.endTime + 1)) {
-            var allCars = this.cars.all();
-            for(var id in allCars) {
-                allCars[id].maxSpeed = TRAFFIC.settings.maxSpeed;
-            }
-            stopChallenge = stopChallenges.shift();
-        }
-        if (this.totalTime > heavyChallenge?.startTime && !heavyChallenge?.occurred) {
+        if (this.totalTime > heavyChallenge?.startTime) {
             this.carsNumber += heavyChallenge.carsCount;
             this.heavyEnterRoadId = heavyChallenge.roadId;
             this.heavyEnter = true;
-            heavyChallenge.occurred = true;
             heavyChallenge = heavyChallenges.shift();
         }
         var car, id, intersection, _ref, _ref1, _results;
@@ -982,18 +976,25 @@ TRAFFIC.World.prototype = {
         }
         _ref1 = this.cars.all();
         _results = [];
+        var removeStopChallenge = null;
         for (id in _ref1) {
             car = _ref1[id];
             car.move(delta);
-            if (this.totalTime.between(stopChallenge?.startTime, stopChallenge?.endTime)) {
-                if (car.coords.x.between(stopChallenge.x[0], stopChallenge.x[1]) &&
-                  car.coords.y.between(stopChallenge.y[0], stopChallenge.y[1])) {
-                    car.maxSpeed = EPSILON;
+            for(var stopChallenge of stopChallenges) {
+                if (this.totalTime.between(stopChallenge?.startTime, stopChallenge?.endTime)) {
+                    if (car.coords.x.betweenArr(stopChallenge.x) && car.coords.y.betweenArr(stopChallenge.y)) {
+                        car.maxSpeed = EPSILON;
+                    }
+                } else if (this.totalTime.between(stopChallenge?.endTime, stopChallenge?.endTime + 1)) {
+                    removeStopChallenge = stopChallenge;
+                    car.maxSpeed = TRAFFIC.settings.maxSpeed;
                 }
             }
             if (!car.alive) _results.push(this.removeCar(car));
             else _results.push(void 0);
         }
+        if (removeStopChallenge)
+            stopChallenges = stopChallenges.filter(ch => ch != removeStopChallenge)
         return _results;
     },
     refreshCars : function() {

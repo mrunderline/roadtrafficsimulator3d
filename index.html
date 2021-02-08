@@ -499,8 +499,7 @@
         for (var boxId in boxes) {
           var box = boxes[boxId];
           var boxData = map_1_data.boxes[boxId];
-          if (p.x.between(boxData.x[0], boxData.x[1]) &&
-              p.y.between(boxData.y[0], boxData.y[1])) {
+          if (p.x.betweenArr(boxData.x) && p.y.betweenArr(boxData.y)) {
             box.material = green_mat;
             car.maxSpeed = EPSILON;
             setTimeout(function () {
