@@ -258,7 +258,7 @@ var map_1_data = {
             "target": "intersection1",
             "maxSpeed": 10,
             "possibleIntersections": ["intersection6", "intersection2"]
-        },
+        },  // have possible intersections
         "road22": {
             "id": "road22",
             "name": "انقلاب",
@@ -314,15 +314,31 @@ var map_1_data = {
         'road26',
     ],
     challenges: [
-      {
-        type: 'stop',
-        x: [14 * halfGrid, 15 * halfGrid],
-        y: [8 * halfGrid - 10, 8 * halfGrid + 10]
-      }, {
-        type: 'heavy',
-        roadId: 'road1',
-        carsCount: 10
-      }
+        {
+            type: 'stop',
+            x: [14 * halfGrid, 15 * halfGrid],
+            y: [8 * halfGrid - 10, 8 * halfGrid + 10]
+        }, {
+            type: 'stop',
+            x: [-10, +10],
+            y: [halfGrid, 2 * halfGrid]
+        }, {
+            type: 'stop',
+            x: [-10, +10],
+            y: [14 * halfGrid, 15 * halfGrid]
+        }, {
+            type: 'heavy',
+            roadId: 'road9',
+            carsCount: 5
+        }, {
+            type: 'heavy',
+            roadId: 'road14',
+            carsCount: 5
+        }, {
+            type: 'heavy',
+            roadId: 'road13',
+            carsCount: 15
+        }
     ],
     boxes: {
         box1: {
@@ -632,16 +648,23 @@ Array.prototype.sum = function () {
 
 
 var challenges = TRAFFIC.shuffle(map_1_data.challenges);
+var manualChallenge = challenges.shift();
 var startTimes = [10, 20];
 var challengeDuration = 5 * TRAFFIC.settings.flipLights;
 var challengeCount = startTimes.length;
-for (var i=0 ; i < challengeCount ; i++) {
+
+if (challengeCount != startTimes.length) {
+    alert('challenges and startTimes are not compatible!');
+    throw new Error();
+}
+
+for (var i = 0; i < challengeCount; i++) {
     challenges[i].startTime = startTimes[i];
     challenges[i].endTime = startTimes[i] + challengeDuration;
 }
 
-var stopChallenges = challenges.filter(ch => ch.type == 'stop');
-var heavyChallenges = challenges.filter(ch => ch.type == 'heavy');
+var stopChallenges = challenges.filter(ch => ch.type == 'stop') || {};
+var heavyChallenges = challenges.filter(ch => ch.type == 'heavy') || {};
 var heavyChallenge = heavyChallenges.shift();
 
 var paths = ["road26", "road9", "road13", "road3"];

@@ -61,7 +61,17 @@
   var sets = {timeFactor: 5};
 
   document.body.onkeyup = function (e) {
-    if (e.keyCode == 96) {
+    if (e.keyCode == 13 && manualChallenge) { // to handle manual challenge by enter key
+      manualChallenge.startTime = world.totalTime + (updateTime * 20 / 1000);
+      manualChallenge.endTime = manualChallenge.startTime + challengeDuration;
+      if (manualChallenge.type == 'heavy') {
+        heavyChallenges.unshift(heavyChallenge);
+        heavyChallenge = manualChallenge;
+      } else if (manualChallenge.type == 'stop') {
+        stopChallenges.unshift(manualChallenge);
+      }
+      manualChallenge = undefined;
+    } else if (e.keyCode == 96) { // to release cars by zero button on keypad
       var allCars = world.cars.all();
       var carRoad = {};
       for (id in allCars){
@@ -85,15 +95,12 @@
           }
         }
       }
-    }
-
-    if (e.keyCode != 32) {
-      return
-    }
-    if (mainInt) {
-      stopSimulation();
-    } else {
-      startSimulation()
+    } else if (e.keyCode == 32) { // to pause and start simulation by space key
+      if (mainInt) {
+        stopSimulation();
+      } else {
+        startSimulation()
+      }
     }
   }
 
