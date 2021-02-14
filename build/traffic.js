@@ -309,8 +309,9 @@ var map_1_data = {
         'road8',
         'road8',
         'road8',
-        'road8',
         'road25',
+        'road25',
+        'road26',
         'road26',
     ],
     challenges: [
@@ -350,6 +351,11 @@ var map_1_data = {
             x: [halfGrid * 15, halfGrid * 17],
             y: [halfGrid * 8, halfGrid * 10],
             deliverSide: 'left'
+        },
+        box3: {
+            x: [0, gridSize],
+            y: [13 * halfGrid, 15 * halfGrid],
+            deliverSide: 'down'
         },
     }
 };
