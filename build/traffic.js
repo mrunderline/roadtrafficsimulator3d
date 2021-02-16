@@ -354,8 +354,13 @@ var map_1_data = {
         },
         box3: {
             x: [0, gridSize],
-            y: [13 * halfGrid, 15 * halfGrid],
-            deliverSide: 'down'
+            y: [15 * halfGrid, 17 * halfGrid],
+            deliverSide: 'up'
+        },
+        box4: {
+            x: [-29 * halfGrid, -27 * halfGrid],
+            y: [halfGrid * 8, halfGrid * 10],
+            deliverSide: 'right'
         },
     }
 };
@@ -673,7 +678,7 @@ var stopChallenges = challenges.filter(ch => ch.type == 'stop') || {};
 var heavyChallenges = challenges.filter(ch => ch.type == 'heavy') || {};
 var heavyChallenge = heavyChallenges.shift();
 
-var paths = ["road26", "road9", "road13", "road3"];
+var paths = ["road26", "road9", "road13", "road3", "road7"];
 
 
 TRAFFIC.Point = function (_at_x, _at_y) {

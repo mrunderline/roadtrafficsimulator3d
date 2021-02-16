@@ -268,30 +268,27 @@
     if (TRAFFIC.settings.competitionType == 'logistic') {
       for (var boxId in map_1_data.boxes) {
         var box = map_1_data.boxes[boxId]
-        var rotaion = 0;
+        var ratio = -1;
         if ('up left'.indexOf(box.deliverSide) != -1)
-          rotaion = -Math.PI
+          ratio *= -1;
 
-        if (debug = false)
-          box.deliverSide = 'aaaaaa'
+        // box.deliverSide = 'aaaaaa' // uncomment hole of line for debugging
 
-        console.log(box.deliverSide);
 
         var width = box.x[1] - box.x[0];
         var length = box.y[1] - box.y[0];
         var position = [(box.x[0] + box.x[1]) / 2, 0.5, (box.y[0] + box.y[1]) / 2]
         if ('right left'.indexOf(box.deliverSide) != -1) {
           width -= grid / 2;
-          position[0] += grid / 4;
+          position[0] += ratio * grid / 4;
         }
         if ('up down'.indexOf(box.deliverSide) != -1) {
           length -= grid / 2;
-          position[2] -= grid / 4;
+          position[2] += ratio * grid / 4;
         }
 
         var geo = new THREE.PlaneBufferGeometry(width, length);
         geo.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI * 0.5));
-        geo.applyMatrix(new THREE.Matrix4().makeRotationY(rotaion));
 
         var boxMesh = new THREE.Mesh(geo, yellow_mat);
         boxMesh.position.set(...position);
@@ -506,12 +503,14 @@
         for (var boxId in boxes) {
           var box = boxes[boxId];
           var boxData = map_1_data.boxes[boxId];
-          if (p.x.betweenArr(boxData.x) && p.y.betweenArr(boxData.y)) {
+          if (boxData && p.x.betweenArr(boxData.x) && p.y.betweenArr(boxData.y)) {
             box.material = green_mat;
-            car.maxSpeed = EPSILON;
+            car.maxSpeed = 2 * EPSILON;
             setTimeout(function () {
-              car.maxSpeed = TRAFFIC.settings.maxSpeed;
+              if (car.maxSpeed == 2 * EPSILON)
+                car.maxSpeed = TRAFFIC.settings.maxSpeed;
             }, TRAFFIC.settings.deliveryStopTime);
+            map_1_data.boxes[boxId] = undefined;
           }
         }
       }
