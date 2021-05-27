@@ -8,3 +8,4 @@ Fanavard Traffic Simulator
 * [Ali Souri](https://github.com/ali-souri)
 
   * Main Developer of 2D parts using coffeescript
+  * Initializer of the project
